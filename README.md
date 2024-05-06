@@ -98,7 +98,7 @@ First open the [config file](./carTelemetry2val/config/carTelemetry_feeder.ini) 
 If you have setup your system for the first time then you can follow the next steps.
 
 ### Running the main-program/-s
-1. Set up Kuksa and the feeder python file.
+1. Set up Kuksa and the feeder python file from [here](https://github.com/eclipse-kuksa/kuksa-incubation/tree/main/fone2val).
     ```
     Please visit the link to the Git of Kuksa and follow the instructions:
     https://github.com/eclipse-kuksa/kuksa-incubation/tree/main/fone2val

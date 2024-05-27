@@ -1,0 +1,1193 @@
+{
+  "__inputs": [
+    {
+      "name": "DS_FORMULA_1",
+      "label": "Formula_1",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "influxdb",
+      "pluginName": "InfluxDB"
+    }
+  ],
+  "__elements": {},
+  "__requires": [
+    {
+      "type": "panel",
+      "id": "bargauge",
+      "name": "Bar gauge",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "canvas",
+      "name": "Canvas",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "gauge",
+      "name": "Gauge",
+      "version": ""
+    },
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "10.1.1"
+    },
+    {
+      "type": "datasource",
+      "id": "influxdb",
+      "name": "InfluxDB",
+      "version": "1.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "marcuscalidus-svg-panel",
+      "name": "SVG",
+      "version": "0.3.4"
+    }
+  ],
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "aliasColors": {},
+      "angle": -1,
+      "animate": {},
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_FORMULA_1}"
+      },
+      "doInit": {},
+      "draw": {},
+      "format": "short",
+      "gridPos": {
+        "h": 21,
+        "w": 6,
+        "x": 0,
+        "y": 0
+      },
+      "handleMetric": {},
+      "id": 3,
+      "isVentilating": false,
+      "js_code": "var s = Snap(svgnode);\n\nvar radVorneLinks = s.select(\"#path4-4\");\nvar radVorneRechts = s.select(\"#path87-6\");\nvar radHintenLinks = s.select(\"#path4\");\nvar radHintenRechts = s.select(\"#path87\");\nvar naseVorneLinks = s.select(\"#path9-0\");\nvar naseVorneRechts = s.select(\"#path9\");\nvar spoiler = s.select(\"#path13\");\n\n//console.log(ctrl);\n//console.log('hello');\n\n//var fl_value= ctrl.series[0].datapoints[0][0];\n//var fr_value= ctrl.series[1].datapoints[0][0];\n//var rl_value= ctrl.series[2].datapoints[0][0];\n//var rr_value= ctrl.series[3].datapoints[0][0];\n\nvar fl_value = ctrl.panelData.series[0].fields[1].values[0];\nvar fr_value = ctrl.panelData.series[1].fields[1].values[0];\nvar rl_value = ctrl.panelData.series[2].fields[1].values[0];\nvar rr_value = ctrl.panelData.series[3].fields[1].values[0];\n\nvar wing_fl_value = ctrl.panelData.series[4].fields[1].values[0];\nvar wing_fr_value = ctrl.panelData.series[5].fields[1].values[0];\n\n//console.log(wing_fr_value);\n\nfunction interpolateThreeColors(percentage) {\n    var color1 = '#8FFF53';\n    var color2 = '#FFFF00';\n    var color3 = '#FF0000';\n  color1 = color1.replace(/^#/, '');\n  color2 = color2.replace(/^#/, '');\n  color3 = color3.replace(/^#/, '');\n  \n  var r1 = parseInt(color1.substring(0, 2), 16);\n  var g1 = parseInt(color1.substring(2, 4), 16);\n  var b1 = parseInt(color1.substring(4, 6), 16);\n  \n  var r2 = parseInt(color2.substring(0, 2), 16);\n  var g2 = parseInt(color2.substring(2, 4), 16);\n  var b2 = parseInt(color2.substring(4, 6), 16);\n  \n  var r3 = parseInt(color3.substring(0, 2), 16);\n  var g3 = parseInt(color3.substring(2, 4), 16);\n  var b3 = parseInt(color3.substring(4, 6), 16);\n  \n  if (percentage <= 50) {\n    var r = Math.round(r1 + (r2 - r1) * (percentage / 50));\n    var g = Math.round(g1 + (g2 - g1) * (percentage / 50));\n    var b = Math.round(b1 + (b2 - b1) * (percentage / 50));\n  } else {\n    var r = Math.round(r2 + (r3 - r2) * ((percentage - 50) / 50));\n    var g = Math.round(g2 + (g3 - g2) * ((percentage - 50) / 50));\n    var b = Math.round(b2 + (b3 - b2) * ((percentage - 50) / 50));\n  }\n  \n  return '#' + r.toString(16).padStart(2, '0') +\n               g.toString(16).padStart(2, '0') +\n               b.toString(16).padStart(2, '0');\n}\n\nradVorneLinks.attr({\n  fill: interpolateThreeColors(fl_value*10)\n});\nradVorneRechts.attr({\n  fill: interpolateThreeColors(fr_value*10)\n});\nradHintenLinks.attr({\n  fill: interpolateThreeColors(rl_value*10)\n});\nradHintenRechts.attr({\n  fill: interpolateThreeColors(rr_value*10)\n});\nnaseVorneRechts.attr({\n  fill: interpolateThreeColors(wing_fr_value)\n});\nnaseVorneLinks.attr({\n  fill: interpolateThreeColors(wing_fl_value)\n});\n//console.log(fl_value)\n",
+      "js_init_code": "var s = Snap(svgnode);\r\nvar gruen = '#8FFF53';\r\n\r\nvar radVorneLinks = s.select(\"#path4-4\");\r\nvar radVorneRechts = s.select(\"#path87-6\");\r\nvar radHintenLinks = s.select(\"#path4\");\r\nvar radHintenRechts = s.select(\"#path87\");\r\nvar naseVorneLinks = s.select(\"#path9-0\");\r\nvar naseVorneRechts = s.select(\"#path9\");\r\nvar spoiler = s.select(\"#path13\");\r\n\r\nvar fraunhoferGruen= '#009374';\r\n\r\nradVorneLinks.attr({\r\n  fill: gruen\r\n});\r\nradVorneRechts.attr({\r\n  fill: gruen\r\n});\r\nradHintenLinks.attr({\r\n  fill: gruen\r\n});\r\nradHintenRechts.attr({\r\n  fill: gruen\r\n});\r\nspoiler.attr({\r\n  fill: fraunhoferGruen\r\n});\r\nnaseVorneRechts.attr({\r\n  fill: gruen\r\n});\r\nnaseVorneLinks.attr({\r\n  fill: gruen\r\n});\r\nvar fl_value= ctrl.series[0].datapoints[0][0];\r\nvar fr_value= ctrl.series[1].datapoints[0][0];\r\nvar rl_value= ctrl.series[2].datapoints[0][0];\r\nvar rr_value= ctrl.series[3].datapoints[0][0];\r\n\r\n//var fl = ctrl.panelData.series[0].fields[1].values[0];\r\n//var fr = ctrl.panelData.series[1].fields[1].values[0];\r\n//var rl = ctrl.panelData.series[2].fields[1].values[0];\r\n//var rr = ctrl.panelData.series[3].fields[1].values[0];\r\n\r\n//console.log(fr);\r\n//console.log(fl_value);",
+      "links": [],
+      "maxDataPoints": 3,
+      "nullPointMode": "connected",
+      "repositories": {
+        "rtmaster": {
+          "description": "simple examples",
+          "items": [
+            {
+              "category": "arrows",
+              "description": "Arrow facing up",
+              "name": "arrow-up",
+              "path": "rtmaster/arrows/arrow-up.svg"
+            },
+            {
+              "category": "arrows",
+              "description": "Arrow facing down",
+              "name": "arrow-down",
+              "path": "rtmaster/arrows/arrow-down.svg"
+            },
+            {
+              "category": "arrows",
+              "description": "Arrow facing right",
+              "name": "arrow-right",
+              "path": "rtmaster/arrows/arrow-right.svg"
+            },
+            {
+              "category": "arrows",
+              "description": "Arrow facing left",
+              "name": "arrow-left",
+              "path": "rtmaster/arrows/arrow-left.svg"
+            },
+            {
+              "category": "arrows",
+              "description": "Arrow facing up right",
+              "name": "arrow-up-right",
+              "path": "rtmaster/arrows/arrow-up-right.svg"
+            },
+            {
+              "category": "arrows",
+              "description": "Arrow facing up left",
+              "name": "arrow-up-left",
+              "path": "rtmaster/arrows/arrow-up-left.svg"
+            },
+            {
+              "category": "arrows",
+              "description": "Arrow facing down left",
+              "name": "arrow-down-left",
+              "path": "rtmaster/arrows/arrow-down-left.svg"
+            },
+            {
+              "category": "arrows",
+              "description": "Arrow facing down right",
+              "name": "arrow-down-right",
+              "path": "rtmaster/arrows/arrow-down-right.svg"
+            },
+            {
+              "category": "arrows",
+              "description": "Arrow facing left right",
+              "name": "arrow-left-right",
+              "path": "rtmaster/arrows/arrow-left-right.svg"
+            },
+            {
+              "category": "arrows",
+              "description": "Arrow facing up down",
+              "name": "arrow-up-down",
+              "path": "rtmaster/arrows/arrow-up-down.svg"
+            },
+            {
+              "category": "arrows",
+              "description": "Arrow facing up down left right",
+              "name": "arrow-up-down-left-right",
+              "path": "rtmaster/arrows/arrow-up-down-left-right.svg"
+            },
+            {
+              "category": "facilities",
+              "description": "Factory",
+              "name": "factory",
+              "path": "rtmaster/facilities/factory.svg"
+            },
+            {
+              "category": "facilities",
+              "description": "Jackup",
+              "name": "jackup",
+              "path": "rtmaster/facilities/jackup.svg"
+            },
+            {
+              "category": "facilities",
+              "description": "Plant",
+              "name": "plant",
+              "path": "rtmaster/facilities/plant.svg"
+            },
+            {
+              "category": "facilities",
+              "description": "Semisub",
+              "name": "semisub",
+              "path": "rtmaster/facilities/semisub.svg"
+            },
+            {
+              "category": "facilities",
+              "description": "Ship",
+              "name": "ship",
+              "path": "rtmaster/facilities/ship.svg"
+            },
+            {
+              "category": "facilities",
+              "description": "Truck",
+              "name": "truck",
+              "path": "rtmaster/facilities/truck.svg"
+            },
+            {
+              "category": "indicators",
+              "description": "Light Bulb",
+              "name": "light-bulb",
+              "path": "rtmaster/indicators/light-bulb.svg"
+            },
+            {
+              "category": "indicators",
+              "description": "Green Light Indicator",
+              "name": "light-green",
+              "path": "rtmaster/indicators/light-green.svg"
+            },
+            {
+              "category": "indicators",
+              "description": "Orange Light Indicator",
+              "name": "light-orange",
+              "path": "rtmaster/indicators/light-orange.svg"
+            },
+            {
+              "category": "indicators",
+              "description": "Red Light Indicator",
+              "name": "light-red",
+              "path": "rtmaster/indicators/light-red.svg"
+            },
+            {
+              "category": "industrial",
+              "description": "Compressor",
+              "name": "compressor",
+              "path": "rtmaster/industrial/compressor.svg"
+            },
+            {
+              "category": "industrial",
+              "description": "Derrick",
+              "name": "derrick",
+              "path": "rtmaster/industrial/derrick.svg"
+            },
+            {
+              "category": "industrial",
+              "description": "Heat Exchanger",
+              "name": "heatexchanger",
+              "path": "rtmaster/industrial/heatexchanger.svg"
+            },
+            {
+              "category": "industrial",
+              "description": "Motor",
+              "name": "motor",
+              "path": "rtmaster/industrial/motor.svg"
+            },
+            {
+              "category": "industrial",
+              "description": "Pump",
+              "name": "pump",
+              "path": "rtmaster/industrial/pump.svg"
+            },
+            {
+              "category": "industrial",
+              "description": "Horizontal Tank",
+              "name": "tank-horizontal",
+              "path": "rtmaster/industrial/tank-horizontal.svg"
+            },
+            {
+              "category": "industrial",
+              "description": "Vertical Tank",
+              "name": "tank-vertical",
+              "path": "rtmaster/industrial/tank-vertical.svg"
+            },
+            {
+              "category": "industrial",
+              "description": "Turbine",
+              "name": "turbine",
+              "path": "rtmaster/industrial/turbine.svg"
+            },
+            {
+              "category": "industrial",
+              "description": "Horizontal Vessel",
+              "name": "vessel-horizontal",
+              "path": "rtmaster/industrial/vessel-horizontal.svg"
+            },
+            {
+              "category": "industrial",
+              "description": "Vertical Vessel",
+              "name": "vessel-vertical",
+              "path": "rtmaster/industrial/vessel-vertical.svg"
+            },
+            {
+              "category": "letters",
+              "description": "A",
+              "name": "A",
+              "path": "rtmaster/letters/letter-a.svg"
+            },
+            {
+              "category": "letters",
+              "description": "B",
+              "name": "B",
+              "path": "rtmaster/letters/letter-b.svg"
+            },
+            {
+              "category": "letters",
+              "description": "C",
+              "name": "C",
+              "path": "rtmaster/letters/letter-c.svg"
+            },
+            {
+              "category": "letters",
+              "description": "D",
+              "name": "D",
+              "path": "rtmaster/letters/letter-d.svg"
+            },
+            {
+              "category": "letters",
+              "description": "E",
+              "name": "E",
+              "path": "rtmaster/letters/letter-e.svg"
+            },
+            {
+              "category": "letters",
+              "description": "F",
+              "name": "F",
+              "path": "rtmaster/letters/letter-f.svg"
+            },
+            {
+              "category": "letters",
+              "description": "G",
+              "name": "G",
+              "path": "rtmaster/letters/letter-g.svg"
+            },
+            {
+              "category": "letters",
+              "description": "H",
+              "name": "H",
+              "path": "rtmaster/letters/letter-h.svg"
+            },
+            {
+              "category": "letters",
+              "description": "I",
+              "name": "I",
+              "path": "rtmaster/letters/letter-i.svg"
+            },
+            {
+              "category": "letters",
+              "description": "J",
+              "name": "J",
+              "path": "rtmaster/letters/letter-j.svg"
+            },
+            {
+              "category": "letters",
+              "description": "K",
+              "name": "K",
+              "path": "rtmaster/letters/letter-k.svg"
+            },
+            {
+              "category": "letters",
+              "description": "L",
+              "name": "L",
+              "path": "rtmaster/letters/letter-l.svg"
+            },
+            {
+              "category": "letters",
+              "description": "M",
+              "name": "M",
+              "path": "rtmaster/letters/letter-m.svg"
+            },
+            {
+              "category": "letters",
+              "description": "N",
+              "name": "N",
+              "path": "rtmaster/letters/letter-n.svg"
+            },
+            {
+              "category": "letters",
+              "description": "O",
+              "name": "O",
+              "path": "rtmaster/letters/letter-o.svg"
+            },
+            {
+              "category": "letters",
+              "description": "P",
+              "name": "P",
+              "path": "rtmaster/letters/letter-p.svg"
+            },
+            {
+              "category": "letters",
+              "description": "Q",
+              "name": "Q",
+              "path": "rtmaster/letters/letter-q.svg"
+            },
+            {
+              "category": "letters",
+              "description": "R",
+              "name": "R",
+              "path": "rtmaster/letters-letter-r.svg"
+            },
+            {
+              "category": "letters",
+              "description": "S",
+              "name": "S",
+              "path": "rtmaster/letters/letter-s.svg"
+            },
+            {
+              "category": "letters",
+              "description": "T",
+              "name": "T",
+              "path": "rtmaster/letters/letter-t.svg"
+            },
+            {
+              "category": "letters",
+              "description": "U",
+              "name": "U",
+              "path": "rtmaster/letters/letter-u.svg"
+            },
+            {
+              "category": "letters",
+              "description": "V",
+              "name": "V",
+              "path": "rtmaster/letters/letter-v.svg"
+            },
+            {
+              "category": "letters",
+              "description": "W",
+              "name": "W",
+              "path": "rtmaster/letters/letter-w.svg"
+            },
+            {
+              "category": "letters",
+              "description": "X",
+              "name": "X",
+              "path": "rtmaster/letters/letter-x.svg"
+            },
+            {
+              "category": "letters",
+              "description": "Y",
+              "name": "Y",
+              "path": "rtmaster/letters/letter-y.svg"
+            },
+            {
+              "category": "letters",
+              "description": "Z",
+              "name": "Z",
+              "path": "rtmaster/letters/letter-z.svg"
+            },
+            {
+              "category": "meters",
+              "description": "Laboratory Flask",
+              "name": "flask",
+              "path": "rtmaster/meters/flask.svg"
+            },
+            {
+              "category": "meters",
+              "description": "Flowmeter",
+              "name": "flowmeter",
+              "path": "rtmaster/meters/flowmeter.svg"
+            },
+            {
+              "category": "meters",
+              "description": "Gauge",
+              "name": "gauge",
+              "path": "rtmaster/meters/gauge.svg"
+            },
+            {
+              "category": "numbers",
+              "description": "0",
+              "name": "0",
+              "path": "rtmaster/numbers/number-0.svg"
+            },
+            {
+              "category": "numbers",
+              "description": "1",
+              "name": "1",
+              "path": "rtmaster/numbers/number-1.svg"
+            },
+            {
+              "category": "numbers",
+              "description": "2",
+              "name": "2",
+              "path": "rtmaster/numbers/number-2.svg"
+            },
+            {
+              "category": "numbers",
+              "description": "3",
+              "name": "3",
+              "path": "rtmaster/numbers/number-3.svg"
+            },
+            {
+              "category": "numbers",
+              "description": "4",
+              "name": "4",
+              "path": "rtmaster/numbers/number-4.svg"
+            },
+            {
+              "category": "numbers",
+              "description": "5",
+              "name": "5",
+              "path": "rtmaster/numbers/number-5.svg"
+            },
+            {
+              "category": "numbers",
+              "description": "6",
+              "name": "6",
+              "path": "rtmaster/numbers/number-6.svg"
+            },
+            {
+              "category": "numbers",
+              "description": "7",
+              "name": "7",
+              "path": "rtmaster/numbers/number-7.svg"
+            },
+            {
+              "category": "numbers",
+              "description": "8",
+              "name": "8",
+              "path": "rtmaster/numbers/number-8.svg"
+            },
+            {
+              "category": "numbers",
+              "description": "9",
+              "name": "9",
+              "path": "rtmaster/numbers/number-9.svg"
+            },
+            {
+              "category": "pipes",
+              "description": "Pipe curve down",
+              "name": "pipe-curve-down",
+              "path": "rtmaster/pipes/pipe-curve-down.svg"
+            },
+            {
+              "category": "pipes",
+              "description": "Pipe curve down left",
+              "name": "pipe-curve-down-left",
+              "path": "rtmaster/pipes/pipe-curve-down-left.svg"
+            },
+            {
+              "category": "pipes",
+              "description": "Pipe curve down right",
+              "name": "pipe-curve-down-right",
+              "path": "rtmaster/pipes/pipe-curve-down-right.svg"
+            },
+            {
+              "category": "pipes",
+              "description": "Pipe curve left",
+              "name": "pipe-curve-left",
+              "path": "rtmaster/pipes/pipe-curve-left.svg"
+            },
+            {
+              "category": "pipes",
+              "description": "Pipe curve right",
+              "name": "pipe-curve-right",
+              "path": "rtmaster/pipes/pipe-curve-right.svg"
+            },
+            {
+              "category": "pipes",
+              "description": "Pipe curve up",
+              "name": "pipe-curve-up",
+              "path": "rtmaster/pipes/pipe-curve-up.svg"
+            },
+            {
+              "category": "pipes",
+              "description": "Pipe curve up left",
+              "name": "pipe-curve-up-left",
+              "path": "rtmaster/pipes/pipe-curve-up-left.svg"
+            },
+            {
+              "category": "pipes",
+              "description": "Pipe curve up right",
+              "name": "pipe-curve-up-right",
+              "path": "rtmaster/pipes/pipe-curve-up-right.svg"
+            },
+            {
+              "category": "pipes",
+              "description": "Pipe diagonal left",
+              "name": "pipe-diagonal-left",
+              "path": "rtmaster/pipes/pipe-diagonal-left.svg"
+            },
+            {
+              "category": "pipes",
+              "description": "Pipe diagonal right",
+              "name": "pipe-diagonal-right",
+              "path": "rtmaster/pipes/pipe-diagonal-right.svg"
+            },
+            {
+              "category": "pipes",
+              "description": "Pipe flange horizontal",
+              "name": "pipe-flange-horizontal",
+              "path": "rtmaster/pipes/pipe-flange-horizontal.svg"
+            },
+            {
+              "category": "pipes",
+              "description": "Pipe flange intersection",
+              "name": "pipe-flange-intersection",
+              "path": "rtmaster/pipes/pipe-flange-intersection.svg"
+            },
+            {
+              "category": "pipes",
+              "description": "Pipe flange vertical",
+              "name": "pipe-flange-vertical",
+              "path": "rtmaster/pipes/pipe-flange-vertical.svg"
+            },
+            {
+              "category": "pipes",
+              "description": "Pipe horizontal",
+              "name": "pipe-horizontal",
+              "path": "rtmaster/pipes/pipe-horizontal.svg"
+            },
+            {
+              "category": "pipes",
+              "description": "Pipe tee down",
+              "name": "pipe-tee-down",
+              "path": "rtmaster/pipes/pipe-tee-down.svg"
+            },
+            {
+              "category": "pipes",
+              "description": "Pipe tee left",
+              "name": "pipe-tee-left",
+              "path": "rtmaster/pipes/pipe-tee-left.svg"
+            },
+            {
+              "category": "pipes",
+              "description": "Pipe tee right",
+              "name": "pipe-tee-right",
+              "path": "rtmaster/pipes/pipe-tee-right.svg"
+            },
+            {
+              "category": "pipes",
+              "description": "Pipe tee up",
+              "name": "pipe-tee-up",
+              "path": "rtmaster/pipes/pipe-tee-up"
+            },
+            {
+              "category": "pipes",
+              "description": "Pipe vertical",
+              "name": "pipe-vertical",
+              "path": "rtmaster/pipes/pipe-vertical.svg"
+            },
+            {
+              "category": "shapes",
+              "description": "Circle",
+              "name": "circle",
+              "path": "rtmaster/shapes/circle.svg"
+            },
+            {
+              "category": "shapes",
+              "description": "Gear",
+              "name": "gear",
+              "path": "rtmaster/shapes/gear.svg"
+            },
+            {
+              "category": "shapes",
+              "description": "Line horizontal",
+              "name": "line-horizontal",
+              "path": "rtmaster/shapes/line-horizontal.svg"
+            },
+            {
+              "category": "shapes",
+              "description": "Line horizontal arrow left",
+              "name": "line-horizontal-arrow-left",
+              "path": "rtmaster/shapes/line-horizontal-arrow-left.svg"
+            },
+            {
+              "category": "shapes",
+              "description": "Line horizontal arrow right",
+              "name": "line-horizontal-arrow-right",
+              "path": "rtmaster/shapes/line-horizontal-arrow-right.svg"
+            },
+            {
+              "category": "shapes",
+              "description": "Line vertical",
+              "name": "line-vertical",
+              "path": "rtmaster/shapes/line-vertical.svg"
+            },
+            {
+              "category": "shapes",
+              "description": "Line vertical arrow down",
+              "name": "line-vertical-arrow-down",
+              "path": "rtmaster/shapes/line-vertical-arrow-down.svg"
+            },
+            {
+              "category": "shapes",
+              "description": "Line vertical arrow up",
+              "name": "line-vertical-arrow-up",
+              "path": "rtmaster/shapes/line-vertical-arrow-up.svg"
+            },
+            {
+              "category": "shapes",
+              "description": "Square",
+              "name": "square",
+              "path": "rtmaster/shapes/square.svg"
+            },
+            {
+              "category": "shapes",
+              "description": "Triangle down",
+              "name": "triangle-down",
+              "path": "rtmaster/shapes/triangle-down.svg"
+            },
+            {
+              "category": "shapes",
+              "description": "Triangle left",
+              "name": "triangle-left",
+              "path": "rtmaster/shapes/triangle-left.svg"
+            },
+            {
+              "category": "shapes",
+              "description": "Triangle right",
+              "name": "triangle-right",
+              "path": "rtmaster/shapes/triangle-right.svg"
+            },
+            {
+              "category": "shapes",
+              "description": "Triangle-up",
+              "name": "triangle-up",
+              "path": "rtmaster/shapes/triangle-up.svg"
+            },
+            {
+              "category": "valves",
+              "description": "Valve Horizontal",
+              "name": "valve-horizontal",
+              "path": "rtmaster/valves/valve-horizontal.svg"
+            },
+            {
+              "category": "valves",
+              "description": "Valve left right",
+              "name": "valve-left-right",
+              "path": "rtmaster/valves/valve-left-right.svg"
+            },
+            {
+              "category": "valves",
+              "description": "Valve round down",
+              "name": "valve-round-down",
+              "path": "rtmaster/valves/valve-round-down.svg"
+            },
+            {
+              "category": "valves",
+              "description": "Valve round left",
+              "name": "valve-round-left",
+              "path": "rtmaster/valves/valve-round-left.svg"
+            },
+            {
+              "category": "valves",
+              "description": "Valve round right",
+              "name": "valve-round-right",
+              "path": "rtmaster/valves/valve-round-right.svg"
+            },
+            {
+              "category": "valves",
+              "description": "Valve round up",
+              "name": "valve-round-up",
+              "path": "rtmaster/valves/valve-round-up.svg"
+            },
+            {
+              "category": "valves",
+              "description": "Valve square down",
+              "name": "valve-square-down",
+              "path": "rtmaster/valves/valve-square-down.svg"
+            },
+            {
+              "category": "valves",
+              "description": "Valve square left",
+              "name": "valve-square-left",
+              "path": "rtmaster/valves/valve-square-left.svg"
+            },
+            {
+              "category": "valves",
+              "description": "Valve square right",
+              "name": "valve-square-right",
+              "path": "rtmaster/valves/valve-square-right.svg"
+            },
+            {
+              "category": "valves",
+              "description": "Valve square up",
+              "name": "valve-square-up",
+              "path": "rtmaster/valves/valve-square-up.svg"
+            },
+            {
+              "category": "valves",
+              "description": "Valve vertical",
+              "name": "valve-vertical",
+              "path": "rtmaster/valves/valve-vertical"
+            }
+          ],
+          "license": "Apache 2.0",
+          "url": "https://github.com/rtmaster"
+        }
+      },
+      "startAnimation": {},
+      "stopAnimation": {},
+      "svgBuilderData": {
+        "elements": [],
+        "height": "100%",
+        "viewport": {
+          "height": 1000,
+          "width": 1000,
+          "x": 0,
+          "y": 0
+        },
+        "width": "100%"
+      },
+      "svg_data": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<!-- Created with Inkscape (http://www.inkscape.org/) -->\n\n<svg\n   width=\"109.892mm\"\n   height=\"186.65909mm\"\n   viewBox=\"0 0 109.892 186.65909\"\n   version=\"1.1\"\n   id=\"svg1\"\n   xml:space=\"preserve\"\n   xmlns=\"http://www.w3.org/2000/svg\"\n   xmlns:svg=\"http://www.w3.org/2000/svg\"><defs\n     id=\"defs1\" /><g\n     id=\"layer1\"\n     transform=\"translate(-31.696711,-42.027266)\"><g\n       id=\"rad_2\"\n       transform=\"translate(-60.210321,-59.27847)\"><path\n         d=\"m 178.57876,144.09235 0.0501,5.0183 c 0,0 -0.0205,0.16639 -0.0212,0.17208 l 0.0858,4.40077 c 0.0775,3.96356 0.16223,4.72072 0.64441,5.75469 0.66124,1.41795 1.69429,2.4913 3.14348,3.2675 1.00522,0.53841 1.41384,0.56896 7.67601,0.56896 6.16884,0 6.69482,-0.0376 7.80521,-0.55656 0.40147,-0.18762 0.76841,-0.41305 1.1157,-0.66094 l 0.91053,-0.78858 c 0.4738,-0.48747 0.89281,-1.04293 1.24179,-1.69447 0.55601,-1.03809 0.56844,-1.31011 0.56844,-12.17445 0,-10.74021 -0.0187,-11.15239 -0.55656,-12.30313 -0.66293,-1.41852 -1.69552,-2.4922 -3.14399,-3.26802 -1.00523,-0.53841 -1.41436,-0.56844 -7.67653,-0.56844 -6.16883,0 -6.69482,0.0376 -7.80521,0.55656 -1.42124,0.66422 -2.49538,1.69883 -3.26337,3.14399 -0.48919,0.92051 -0.57656,1.59887 -0.65836,5.09685 l -0.0946,4.03489 z\"\n         id=\"path87-6\"\n         style=\"fill:#ff0000\" /><path\n         id=\"path84-0\"\n         style=\"display:inline;fill:#000000\"\n         d=\"m 165.62916,187.98646 0.0501,5.0183 c 0,0 -0.0205,0.16639 -0.0212,0.17208 l 0.0858,4.40077 c 0.0775,3.96356 0.16223,4.72072 0.64441,5.75469 0.66124,1.41795 1.69429,2.4913 3.14348,3.2675 1.00522,0.53841 1.41384,0.56896 7.67601,0.56896 6.16884,0 6.69482,-0.0376 7.80521,-0.55656 0.40147,-0.18762 0.76841,-0.41305 1.1157,-0.66094 l 0.91053,-0.78858 c 0.4738,-0.48747 0.89281,-1.04293 1.24179,-1.69447 0.55601,-1.03809 0.56844,-1.31011 0.56844,-12.17445 0,-10.74021 -0.0187,-11.15239 -0.55656,-12.30313 -0.66293,-1.41852 -1.69552,-2.4922 -3.14399,-3.26802 -1.00523,-0.53841 -1.41436,-0.56844 -7.67653,-0.56844 -6.16883,0 -6.69482,0.0376 -7.80521,0.55656 -1.42124,0.66422 -2.49538,1.69883 -3.26337,3.14399 -0.48919,0.92051 -0.57656,1.59887 -0.65836,5.09685 l -0.0946,4.03489 z m 11.71092,-11.90056 c 2.89184,0 5.7837,0.097 6.48229,0.29042 1.40424,0.38874 3.41671,2.40071 3.80545,3.80494 0.19024,0.68717 0.29301,4.53797 0.29301,10.9802 0,6.44225 -0.10277,10.29303 -0.29301,10.98021 -0.38874,1.40424 -2.40121,3.4162 -3.80545,3.80494 -1.61862,0.44772 -11.8994,0.36866 -13.22865,-0.1018 -1.35273,-0.47879 -3.17713,-2.39661 -3.54707,-3.72898 -0.39577,-1.42434 -0.39009,-20.50308 0.006,-21.93457 0.38874,-1.40423 2.40071,-3.4162 3.80493,-3.80494 0.6986,-0.1934 3.59045,-0.29042 6.4823,-0.29042 z\"\n         transform=\"translate(12.949603,-43.894111)\" /></g><g\n       id=\"rad_1\"\n       transform=\"translate(0.16817733,-0.33635347)\"><path\n         d=\"m 117.69881,190.50911 0.0501,5.0183 c 0,0 -0.0205,0.16639 -0.0212,0.17208 l 0.0858,4.40077 c 0.0775,3.96356 0.16223,4.72072 0.64441,5.75469 0.66124,1.41795 1.69429,2.4913 3.14348,3.2675 1.00522,0.53841 1.41384,0.56896 7.67601,0.56896 6.16884,0 6.69482,-0.0376 7.80521,-0.55656 0.40147,-0.18762 0.76841,-0.41305 1.1157,-0.66094 l 0.91053,-0.78858 c 0.4738,-0.48747 0.89281,-1.04293 1.24179,-1.69447 0.55601,-1.03809 0.56844,-1.31011 0.56844,-12.17445 0,-10.74021 -0.0187,-11.15239 -0.55656,-12.30313 -0.66293,-1.41852 -1.69552,-2.4922 -3.14399,-3.26802 -1.00523,-0.53841 -1.41436,-0.56844 -7.67653,-0.56844 -6.16883,0 -6.69482,0.0376 -7.80521,0.55656 -1.42124,0.66422 -2.49538,1.69883 -3.26337,3.14399 -0.48919,0.92051 -0.57656,1.59887 -0.65836,5.09685 l -0.0946,4.03489 z\"\n         id=\"path87\"\n         style=\"fill:#ff0000\" /><path\n         id=\"path84\"\n         style=\"display:inline;fill:#000000\"\n         d=\"m 165.62916,187.98646 0.0501,5.0183 c 0,0 -0.0205,0.16639 -0.0212,0.17208 l 0.0858,4.40077 c 0.0775,3.96356 0.16223,4.72072 0.64441,5.75469 0.66124,1.41795 1.69429,2.4913 3.14348,3.2675 1.00522,0.53841 1.41384,0.56896 7.67601,0.56896 6.16884,0 6.69482,-0.0376 7.80521,-0.55656 0.40147,-0.18762 0.76841,-0.41305 1.1157,-0.66094 l 0.91053,-0.78858 c 0.4738,-0.48747 0.89281,-1.04293 1.24179,-1.69447 0.55601,-1.03809 0.56844,-1.31011 0.56844,-12.17445 0,-10.74021 -0.0187,-11.15239 -0.55656,-12.30313 -0.66293,-1.41852 -1.69552,-2.4922 -3.14399,-3.26802 -1.00523,-0.53841 -1.41436,-0.56844 -7.67653,-0.56844 -6.16883,0 -6.69482,0.0376 -7.80521,0.55656 -1.42124,0.66422 -2.49538,1.69883 -3.26337,3.14399 -0.48919,0.92051 -0.57656,1.59887 -0.65836,5.09685 l -0.0946,4.03489 z m 11.71092,-11.90056 c 2.89184,0 5.7837,0.097 6.48229,0.29042 1.40424,0.38874 3.41671,2.40071 3.80545,3.80494 0.19024,0.68717 0.29301,4.53797 0.29301,10.9802 0,6.44225 -0.10277,10.29303 -0.29301,10.98021 -0.38874,1.40424 -2.40121,3.4162 -3.80545,3.80494 -1.61862,0.44772 -11.8994,0.36866 -13.22865,-0.1018 -1.35273,-0.47879 -3.17713,-2.39661 -3.54707,-3.72898 -0.39577,-1.42434 -0.39009,-20.50308 0.006,-21.93457 0.38874,-1.40423 2.40071,-3.4162 3.80493,-3.80494 0.6986,-0.1934 3.59045,-0.29042 6.4823,-0.29042 z\"\n         transform=\"translate(-47.930352,2.5226502)\" /></g><g\n       id=\"rad_3\"\n       transform=\"translate(0.71351316,8.7999957)\"><path\n         d=\"m 54.69072,186.39895 -0.0031,-0.0114 v -5.01572 h -0.0036 l -0.09405,-4.0349 c -0.08178,-3.49796 -0.169692,-4.17633 -0.658874,-5.09684 -0.767994,-1.44515 -1.84213,-2.47979 -3.263367,-3.144 -1.110389,-0.51894 -1.636378,-0.55655 -7.805208,-0.55655 -6.262182,0 -6.670785,0.03 -7.676017,0.56844 -1.44846,0.77581 -2.481569,1.84951 -3.144511,3.26802 -0.5378,1.15073 -0.556555,1.56289 -0.556555,12.30312 0,10.86435 0.01294,11.13636 0.568957,12.17445 0.775812,1.44846 1.848989,2.48105 3.267501,3.144 1.11039,0.51894 1.636378,0.55655 7.805208,0.55655 6.262182,0 6.671302,-0.0305 7.676534,-0.56896 1.449184,-0.77619 2.481718,-1.84955 3.142961,-3.2675 0.482179,-1.03398 0.566935,-1.79113 0.644405,-5.75468 l 0.0894,-4.56407 z\"\n         id=\"path4\"\n         style=\"fill:#ff0000\" /><path\n         id=\"path2\"\n         style=\"display:inline;fill:#030303\"\n         d=\"m 54.69072,186.39895 -0.0031,-0.0114 v -5.01572 h -0.0036 l -0.09405,-4.0349 c -0.08178,-3.49796 -0.169692,-4.17633 -0.658874,-5.09684 -0.767994,-1.44515 -1.84213,-2.47979 -3.263367,-3.144 -1.110389,-0.51894 -1.636378,-0.55655 -7.805208,-0.55655 -6.262182,0 -6.670785,0.03 -7.676017,0.56844 -1.44846,0.77581 -2.481569,1.84951 -3.144511,3.26802 -0.5378,1.15073 -0.556555,1.56289 -0.556555,12.30312 0,10.86435 0.01294,11.13636 0.568957,12.17445 0.775812,1.44846 1.848989,2.48105 3.267501,3.144 1.11039,0.51894 1.636378,0.55655 7.805208,0.55655 6.262182,0 6.671302,-0.0305 7.676534,-0.56896 1.449184,-0.77619 2.481718,-1.84955 3.142961,-3.2675 0.482179,-1.03398 0.566935,-1.79113 0.644405,-5.75468 l 0.0894,-4.56407 z M 42.994794,169.4713 c 2.891843,0 5.783697,0.097 6.482291,0.29043 1.404235,0.38874 3.416712,2.40069 3.805453,3.80493 0.4014,1.44996 0.4014,20.51047 0,21.96042 -0.388742,1.40424 -2.401218,3.41619 -3.805453,3.80493 -1.617604,0.44781 -11.899832,0.36871 -13.229166,-0.1018 -1.352728,-0.47878 -3.17662,-2.3966 -3.546554,-3.72897 -0.39547,-1.42435 -0.390088,-20.50308 0.0062,-21.93458 0.388745,-1.40424 2.400701,-3.41619 3.804936,-3.80493 0.698593,-0.1934 3.590449,-0.29043 6.482293,-0.29043 z\" /></g><g\n       id=\"rad_4\"\n       transform=\"translate(65.854484,-66.463869)\"><path\n         d=\"m -10.952491,156.19356 -0.0031,-0.0114 v -5.01572 h -0.0036 l -0.09405,-4.0349 c -0.08178,-3.49796 -0.169692,-4.17633 -0.658874,-5.09684 -0.767994,-1.44515 -1.84213,-2.47979 -3.263367,-3.144 -1.110389,-0.51894 -1.636378,-0.55655 -7.805208,-0.55655 -6.262182,0 -6.670785,0.03 -7.676017,0.56844 -1.44846,0.77581 -2.481569,1.84951 -3.144511,3.26802 -0.5378,1.15073 -0.556555,1.56289 -0.556555,12.30312 0,10.86435 0.01294,11.13636 0.568957,12.17445 0.775812,1.44846 1.848989,2.48105 3.267501,3.144 1.11039,0.51894 1.636378,0.55655 7.805208,0.55655 6.262182,0 6.671302,-0.0305 7.676534,-0.56896 1.449184,-0.77619 2.481718,-1.84955 3.142961,-3.2675 0.482179,-1.03398 0.566935,-1.79113 0.644405,-5.75468 l 0.0894,-4.56407 z\"\n         id=\"path4-4\"\n         style=\"fill:#ff0000\" /><path\n         id=\"path2-0\"\n         style=\"display:inline;fill:#030303\"\n         d=\"m 54.69072,186.39895 -0.0031,-0.0114 v -5.01572 h -0.0036 l -0.09405,-4.0349 c -0.08178,-3.49796 -0.169692,-4.17633 -0.658874,-5.09684 -0.767994,-1.44515 -1.84213,-2.47979 -3.263367,-3.144 -1.110389,-0.51894 -1.636378,-0.55655 -7.805208,-0.55655 -6.262182,0 -6.670785,0.03 -7.676017,0.56844 -1.44846,0.77581 -2.481569,1.84951 -3.144511,3.26802 -0.5378,1.15073 -0.556555,1.56289 -0.556555,12.30312 0,10.86435 0.01294,11.13636 0.568957,12.17445 0.775812,1.44846 1.848989,2.48105 3.267501,3.144 1.11039,0.51894 1.636378,0.55655 7.805208,0.55655 6.262182,0 6.671302,-0.0305 7.676534,-0.56896 1.449184,-0.77619 2.481718,-1.84955 3.142961,-3.2675 0.482179,-1.03398 0.566935,-1.79113 0.644405,-5.75468 l 0.0894,-4.56407 z M 42.994794,169.4713 c 2.891843,0 5.783697,0.097 6.482291,0.29043 1.404235,0.38874 3.416712,2.40069 3.805453,3.80493 0.4014,1.44996 0.4014,20.51047 0,21.96042 -0.388742,1.40424 -2.401218,3.41619 -3.805453,3.80493 -1.617604,0.44781 -11.899832,0.36871 -13.229166,-0.1018 -1.352728,-0.47878 -3.17662,-2.3966 -3.546554,-3.72897 -0.39547,-1.42435 -0.390088,-20.50308 0.0062,-21.93458 0.388745,-1.40424 2.400701,-3.41619 3.804936,-3.80493 0.698593,-0.1934 3.590449,-0.29043 6.482293,-0.29043 z\"\n         transform=\"translate(-65.643211,-30.205391)\" /></g><g\n       id=\"nase_rechts\"\n       transform=\"translate(1.1891886,-2.0216207)\"><path\n         d=\"m 87.443355,44.10518 6.213574,24.28844 1.021643,-0.24908 c -0.45653,-1.824227 -0.724474,-2.976592 -0.691947,-3.009119 0.129679,-0.12968 8.953805,2.094222 23.269385,5.864758 l 9.26041,2.439128 -0.0382,0.0026 0.03,0.0057 3.56309,-0.07545 c -0.22196,-0.09147 -0.32293,-0.213692 -0.36535,-0.425813 -0.0622,-0.310866 -0.17698,-4.4873 -0.25528,-9.280571 -0.10741,-6.578337 -0.22535,-8.790522 -0.48007,-9.022705 -0.18561,-0.169179 -9.02904,-2.426127 -19.65203,-5.015714 -10.623006,-2.589617 -19.884567,-4.928988 -20.581177,-5.19868 -0.36253,-0.140352 -0.814035,-0.243939 -1.293978,-0.323494 z\"\n         id=\"path9\"\n         style=\"fill:#ff0000\" /><path\n         id=\"path7\"\n         style=\"display:inline;fill:#030303\"\n         d=\"m 86.254166,43.391667 6.213574,24.28844 1.021643,-0.24908 c -0.45653,-1.824227 -0.724474,-2.976592 -0.691947,-3.009119 0.129679,-0.12968 8.953804,2.094222 23.269384,5.864758 l 9.26041,2.439128 -0.0382,0.0026 0.03,0.0057 3.56309,-0.07545 c -0.22196,-0.09147 -0.32293,-0.213692 -0.36535,-0.425813 -0.0622,-0.310866 -0.17698,-4.4873 -0.25528,-9.280571 -0.10741,-6.578337 -0.22535,-8.790522 -0.48007,-9.022705 -0.18561,-0.169179 -9.02904,-2.426127 -19.65203,-5.015714 -10.623005,-2.589617 -19.884566,-4.928988 -20.581176,-5.19868 -0.36253,-0.140352 -0.814035,-0.243939 -1.293978,-0.323494 z m 1.539958,2.223637 c 0.27023,0.0052 9.123528,2.129634 19.673736,4.721159 l 19.18229,4.711857 0.0698,8.375716 c 0.0384,4.606583 -0.0211,8.368813 -0.13229,8.360213 -0.11119,-0.0086 -0.38065,-0.12531 -0.59893,-0.259415 -0.40973,-0.251725 -26.450864,-7.111936 -31.007408,-8.168494 -1.410654,-0.327098 -2.67872,-0.734059 -2.817916,-0.904338 -0.139195,-0.170279 -1.231917,-3.879974 -2.428275,-8.243424 -1.19636,-4.363452 -2.233106,-8.084165 -2.303736,-8.268229 -0.07572,-0.197335 0.07306,-0.330545 0.362769,-0.325045 z\"\n         transform=\"translate(1.1891886,0.71351316)\" /></g><g\n       id=\"nase_links\"\n       transform=\"matrix(-1,0,0,1,171.61332,-1.6270728)\"><path\n         d=\"m 87.443355,44.10518 6.213574,24.28844 1.021643,-0.24908 c -0.45653,-1.824227 -0.724474,-2.976592 -0.691947,-3.009119 0.129679,-0.12968 8.953805,2.094222 23.269385,5.864758 l 9.26041,2.439128 -0.0382,0.0026 0.03,0.0057 3.56309,-0.07545 c -0.22196,-0.09147 -0.32293,-0.213692 -0.36535,-0.425813 -0.0622,-0.310866 -0.17698,-4.4873 -0.25528,-9.280571 -0.10741,-6.578337 -0.22535,-8.790522 -0.48007,-9.022705 -0.18561,-0.169179 -9.02904,-2.426127 -19.65203,-5.015714 -10.623006,-2.589617 -19.884567,-4.928988 -20.581177,-5.19868 -0.36253,-0.140352 -0.814035,-0.243939 -1.293978,-0.323494 z\"\n         id=\"path9-0\"\n         style=\"fill:#ff0000\" /><path\n         id=\"path7-3\"\n         style=\"display:inline;fill:#030303\"\n         d=\"m 86.254166,43.391667 6.213574,24.28844 1.021643,-0.24908 c -0.45653,-1.824227 -0.724474,-2.976592 -0.691947,-3.009119 0.129679,-0.12968 8.953804,2.094222 23.269384,5.864758 l 9.26041,2.439128 -0.0382,0.0026 0.03,0.0057 3.56309,-0.07545 c -0.22196,-0.09147 -0.32293,-0.213692 -0.36535,-0.425813 -0.0622,-0.310866 -0.17698,-4.4873 -0.25528,-9.280571 -0.10741,-6.578337 -0.22535,-8.790522 -0.48007,-9.022705 -0.18561,-0.169179 -9.02904,-2.426127 -19.65203,-5.015714 -10.623005,-2.589617 -19.884566,-4.928988 -20.581176,-5.19868 -0.36253,-0.140352 -0.814035,-0.243939 -1.293978,-0.323494 z m 1.539958,2.223637 c 0.27023,0.0052 9.123528,2.129634 19.673736,4.721159 l 19.18229,4.711857 0.0698,8.375716 c 0.0384,4.606583 -0.0211,8.368813 -0.13229,8.360213 -0.11119,-0.0086 -0.38065,-0.12531 -0.59893,-0.259415 -0.40973,-0.251725 -26.450864,-7.111936 -31.007408,-8.168494 -1.410654,-0.327098 -2.67872,-0.734059 -2.817916,-0.904338 -0.139195,-0.170279 -1.231917,-3.879974 -2.428275,-8.243424 -1.19636,-4.363452 -2.233106,-8.084165 -2.303736,-8.268229 -0.07572,-0.197335 0.07306,-0.330545 0.362769,-0.325045 z\"\n         transform=\"translate(1.1891886,0.71351316)\" /></g><g\n       id=\"spoiler\"><path\n         d=\"m 98.617305,208.87492 -0.896586,0.46199 -21.405412,-0.0594 -1.48053,-0.59221 -0.0217,0.0868 -9.256799,-0.0605 -9.256283,-0.0599 -0.855762,0.81752 c -1.208438,1.15447 -2.406234,1.39133 -7.07347,1.39733 -2.255569,0.003 -4.259572,0.106 -4.453475,0.22892 -0.437122,0.2771 -0.448604,5.34042 -0.01912,8.42843 0.385136,2.76915 2.149919,7.68571 3.244763,9.03976 0.235502,0.29126 0.341452,0.0951 0.499195,-0.92604 0.110073,-0.71257 0.264895,-1.68249 0.344165,-2.15543 l 0.144177,-0.85989 h 17.664038 17.664038 l 0.482658,1.12448 c 0.71408,1.66468 1.928422,2.84427 2.928503,2.84427 1.05112,0 1.846761,-0.74314 2.570386,-2.40037 l 0.569474,-1.3038 h 17.635615 17.63562 l 0.47232,1.55908 c 0.25966,0.85743 0.39002,1.69087 0.29042,1.85208 -0.10069,0.16292 -0.0105,0.29301 0.20257,0.29301 0.48328,0 2.15336,-3.69668 2.92851,-6.48229 0.71257,-2.5607 0.98789,-10.3629 0.3793,-10.7487 -0.1939,-0.12291 -2.19842,-0.22593 -4.45399,-0.22893 -4.66724,-0.006 -5.86452,-0.24286 -7.07295,-1.39733 l -0.85576,-0.81752 -9.25681,0.0599 -9.256281,0.0605 z\"\n         id=\"path13\"\n         style=\"fill:#ff0000\" /><path\n         id=\"path11\"\n         style=\"display:inline;fill:#030303\"\n         d=\"m 98.617305,208.87492 -0.896586,0.46199 -21.405412,-0.0594 -1.48053,-0.59221 -0.0217,0.0868 -9.256799,-0.0605 -9.256283,-0.0599 -0.855762,0.81752 c -1.208438,1.15447 -2.406234,1.39133 -7.07347,1.39733 -2.255569,0.003 -4.259572,0.106 -4.453475,0.22892 -0.437122,0.2771 -0.448604,5.34042 -0.01912,8.42843 0.385136,2.76915 2.149919,7.68571 3.244763,9.03976 0.235502,0.29126 0.341452,0.0951 0.499195,-0.92604 0.110073,-0.71257 0.264895,-1.68249 0.344165,-2.15543 l 0.144177,-0.85989 h 17.664038 17.664038 l 0.482658,1.12448 c 0.71408,1.66468 1.928422,2.84427 2.928503,2.84427 1.05112,0 1.846761,-0.74314 2.570386,-2.40037 l 0.569474,-1.3038 h 17.635615 17.63562 l 0.47232,1.55908 c 0.25966,0.85743 0.39002,1.69087 0.29042,1.85208 -0.10069,0.16292 -0.0105,0.29301 0.20257,0.29301 0.48328,0 2.15336,-3.69668 2.92851,-6.48229 0.71257,-2.5607 0.98789,-10.3629 0.3793,-10.7487 -0.1939,-0.12291 -2.19842,-0.22593 -4.45399,-0.22893 -4.66724,-0.006 -5.86452,-0.24286 -7.07295,-1.39733 l -0.85576,-0.81752 -9.25681,0.0599 -9.256281,0.0605 z m -11.998751,1.15962 30.093256,0.0119 0.68833,0.64079 c 1.33001,1.23858 1.8055,1.34558 6.64146,1.4919 l 4.6302,0.14004 -0.0253,3.70417 c -0.0248,3.62621 -0.37277,5.68892 -1.42834,8.46356 l -0.30076,0.79065 -0.49661,-0.65835 -0.49661,-0.65836 -18.11724,-0.0713 -18.117244,-0.0718 -0.516764,0.73328 c -0.284039,0.40312 -0.772204,1.2388 -1.085205,1.85725 -0.313002,0.61846 -0.718809,1.12448 -0.901754,1.12448 -0.679136,0 -1.508338,-0.85124 -2.329057,-2.39106 l -0.844393,-1.5844 -18.31051,0.0103 -18.311027,0.0103 -0.31626,0.69453 c -0.435657,0.95617 -0.670427,0.61582 -1.490865,-2.16369 -0.605062,-2.04984 -0.708284,-2.91519 -0.743624,-6.21771 l -0.04134,-3.83646 4.630209,-0.14004 c 4.737257,-0.14333 5.305383,-0.26292 6.524666,-1.37201 0.5611,-0.51007 1.114678,-0.51948 30.664795,-0.50798 z\" /></g><g\n       id=\"grundger__st\"\n       transform=\"translate(82.742921,16.817667)\"><path\n         d=\"m 4.5079268,25.211381 c -1.1147456,-0.0185 -2.2108259,0.106924 -2.9135172,0.382922 -0.5486475,0.215494 -9.8085075,2.545338 -20.5770386,5.177462 -10.768531,2.632124 -19.904789,4.924733 -20.302637,5.09478 -0.397848,0.170045 -0.792516,0.489345 -0.877466,0.709517 -0.08495,0.220171 -0.213424,4.091434 -0.285253,8.602576 -0.07183,4.511141 -0.181453,8.456558 -0.243913,8.767423 -0.105287,0.524055 -0.311416,0.57289 -2.828251,0.675411 -2.086685,0.085 -2.95977,0.238906 -3.775997,0.665076 -1.43794,0.750778 -2.477469,1.826265 -3.144511,3.253548 -0.53813,1.151438 -0.556555,1.560731 -0.556555,12.435417 0,10.999716 0.01264,11.268083 0.568957,12.306742 0.775813,1.448462 1.848987,2.481051 3.267501,3.143994 1.11039,0.51894 1.636374,0.556555 7.805208,0.556555 6.262188,0 6.671301,-0.03054 7.676534,-0.568957 1.453213,-0.778359 2.484449,-1.852639 3.136243,-3.267501 0.438934,-0.952802 0.568619,-1.858497 0.648539,-4.533573 l 0.09974,-3.342432 5.331974,3.172933 c 2.932614,1.745212 5.599411,3.34112 5.926253,3.546553 l 0.594279,0.373621 -1.990576,3.974951 c -1.094991,2.186334 -2.999539,5.812962 -4.2323,8.05894 -1.23276,2.245968 -2.241723,4.204696 -2.241723,4.352706 0,0.148 -0.42862,1.192385 -0.952397,2.320785 -1.15874,2.49633 -5.569186,13.58178 -6.711218,16.86822 -2.020538,5.81457 -3.396485,12.71649 -3.982703,19.97605 -0.312311,3.86757 -0.412248,16.5993 -0.136426,17.38033 0.09308,0.26355 2.502984,2.15019 5.355229,4.19303 2.852245,2.04283 5.167702,3.799 5.145422,3.9026 -0.02228,0.10359 -0.04082,2.33174 -0.04082,4.95112 v 4.7625 h -0.769979 -0.769979 l -0.09405,-4.0349 c -0.08178,-3.49797 -0.169691,-4.17633 -0.658874,-5.09684 -0.767995,-1.44515 -1.842129,-2.47979 -3.263367,-3.144 -1.11039,-0.51894 -1.636372,-0.55655 -7.805208,-0.55655 -6.262188,0 -6.670785,0.03 -7.676018,0.56844 -1.448461,0.77581 -2.481567,1.84951 -3.14451,3.26802 -0.5378,1.15073 -0.556556,1.56288 -0.556556,12.30312 0,10.86436 0.01294,11.13636 0.568958,12.17445 0.775813,1.44846 1.848988,2.48105 3.267501,3.144 1.110391,0.51894 1.636372,0.55655 7.805208,0.55655 6.262188,0 6.671301,-0.0305 7.676534,-0.56896 1.449185,-0.7762 2.481717,-1.84955 3.142961,-3.2675 0.48218,-1.03398 0.566935,-1.79112 0.644405,-5.75468 l 0.0894,-4.56407 h 0.768429 0.767911 l -0.06253,5.09323 -0.06253,5.09323 8.995834,0.13229 8.995833,0.13229 0.084749,1.03302 c 0.046507,0.56822 0.012956,1.31792 -0.074414,1.66604 l -0.1586467,0.63304 -9.2567993,-0.0605 -9.256282,-0.06 -0.855762,0.81753 c -1.208439,1.15447 -2.40623,1.39133 -7.07347,1.39733 -2.255571,0.003 -4.259572,0.106 -4.453475,0.22892 -0.437123,0.2771 -0.448604,5.34042 -0.01912,8.42843 0.385136,2.76915 2.149918,7.68571 3.244763,9.03976 0.235502,0.29126 0.341451,0.0951 0.499194,-0.92604 0.110074,-0.71257 0.264895,-1.68249 0.344165,-2.15543 l 0.144178,-0.85989 h 17.664038 17.66403746 l 0.48265784,1.12448 c 0.7140813,1.66469 1.9284215,2.84427 2.9285035,2.84427 1.0511209,0 1.8467604,-0.74314 2.5703857,-2.40037 l 0.5694743,-1.3038 H 24.813664 42.44928 l 0.472323,1.55908 c 0.25966,0.85743 0.390021,1.69087 0.290421,1.85208 -0.10069,0.16292 -0.0105,0.29301 0.202572,0.29301 0.483279,0 2.153354,-3.69668 2.928503,-6.4823 0.71257,-2.5607 0.987895,-10.36289 0.379305,-10.74869 -0.193899,-0.12291 -2.198424,-0.22593 -4.453991,-0.22893 -4.667246,-0.006 -5.864515,-0.24286 -7.072954,-1.39733 l -0.855761,-0.81752 -9.2568,0.0599 -9.256282,0.0605 -0.159164,-0.63303 c -0.08737,-0.34812 -0.120407,-1.09784 -0.0739,-1.66605 l 0.08423,-1.03301 8.995833,-0.13229 8.995833,-0.1323 -0.06253,-5.09322 -0.06253,-5.09323 h 0.768429 0.768428 l 0.08888,4.56406 c 0.07747,3.96356 0.162226,4.72072 0.644405,5.75469 0.661239,1.41795 1.694289,2.4913 3.143477,3.2675 1.005229,0.53841 1.413834,0.56895 7.676018,0.56895 6.168844,0 6.694819,-0.0376 7.805208,-0.55655 1.418519,-0.66294 2.492198,-1.69554 3.268018,-3.14399 0.556009,-1.03809 0.56844,-1.3101 0.56844,-12.17446 0,-10.74022 -0.01875,-11.15238 -0.556555,-12.30312 -0.662939,-1.41852 -1.695525,-2.4922 -3.143994,-3.26802 -1.005229,-0.53841 -1.41435,-0.56844 -7.676534,-0.56844 -6.168834,0 -6.694819,0.0376 -7.805208,0.55656 -1.421239,0.66422 -2.495378,1.69883 -3.263367,3.14399 -0.48919,0.92051 -0.576558,1.59887 -0.658358,5.09685 l -0.09457,4.03489 h -0.769978 -0.769979 v -4.7625 c 0,-2.61936 -0.02975,-4.83911 -0.06615,-4.93251 -0.03638,-0.0934 2.279075,-1.84958 5.145422,-3.90261 2.866357,-2.05302 5.287967,-3.94807 5.381067,-4.21163 0.27582,-0.78103 0.175884,-13.51276 -0.136426,-17.38033 -0.586219,-7.25955 -1.962681,-14.16149 -3.983219,-19.97604 -1.142039,-3.28646 -5.55248,-14.3719 -6.711218,-16.86822 -0.52378,-1.1284 -0.952397,-2.172782 -0.952397,-2.320792 0,-0.148 -1.008448,-2.106738 -2.241207,-4.352706 -1.232759,-2.245978 -3.137311,-5.872607 -4.2323,-8.058939 l -1.991093,-3.974952 0.594279,-0.37362 c 0.32684,-0.205434 2.993637,-1.801341 5.926254,-3.546554 l 5.331974,-3.172933 0.100252,3.342432 c 0.07992,2.675076 0.209093,3.580771 0.648023,4.533573 0.651799,1.414861 1.683541,2.489142 3.136759,3.267501 1.005229,0.538414 1.413834,0.568958 7.676017,0.568958 6.168834,0 6.69482,-0.03761 7.805209,-0.556555 1.418508,-0.662945 2.492208,-1.695534 3.268017,-3.143995 0.55632,-1.03866 0.568441,-1.307027 0.568441,-12.306742 0,-10.874687 -0.01844,-11.283979 -0.556555,-12.435417 C 57.581276,57.377397 56.54226,56.30191 55.104322,55.551131 54.288093,55.124962 53.414496,54.971055 51.327808,54.886056 48.810771,54.783526 48.60539,54.734743 48.50059,54.210645 48.43843,53.899779 48.323609,49.72335 48.245309,44.930074 48.137899,38.35173 48.019965,36.139552 47.765235,35.907369 47.579625,35.73819 38.736214,33.481244 28.113204,30.891654 17.490192,28.302065 8.228642,25.962697 7.5320316,25.693005 6.7557354,25.392464 5.6226725,25.22988 4.5079268,25.211381 Z m -0.3193603,0.928626 1.1539347,0.612365 c 1.2838067,0.681058 1.303163,0.741068 1.6210897,4.932516 0.4957305,6.535565 2.6550912,21.632786 4.1248131,28.839583 0.593536,2.910414 1.171209,5.767917 1.283642,6.35 0.815575,4.222359 4.805161,14.974111 9.522933,25.664583 11.878998,26.917846 14.56292,34.660606 16.006258,46.169796 0.40544,3.23301 0.515809,11.49346 0.22531,16.89612 l -0.173633,3.22099 -2.604492,1.87224 c -1.432569,1.02991 -2.667536,1.97446 -2.744536,2.0991 -0.07703,0.12464 -0.142694,5.76897 -0.144694,12.5429 l -0.0036,12.31656 H 23.47111 14.487163 v 1.98438 1.98437 l -4.6963545,0.0114 c -2.5829924,0.006 -7.2562009,0.0758 -10.38489583,0.15451 -3.12869487,0.0786 -5.77783827,0.0534 -5.88697917,-0.0558 -0.1091369,-0.10917 -0.1984375,-1.13127 -0.1984375,-2.27118 v -2.07222 h -8.983948 -8.984464 l -0.0041,-12.31656 c -0.0023,-6.77392 -0.06715,-12.41827 -0.144178,-12.54291 -0.07703,-0.12465 -1.312482,-1.06919 -2.745052,-2.09909 l -2.604492,-1.87224 -0.173116,-3.22099 c -0.617717,-11.48823 0.195309,-20.71077 2.50424,-28.4055 2.731296,-9.10231 5.207573,-15.35463 13.727327,-34.660419 4.7177696,-10.690475 8.7073592,-21.442224 9.5229334,-25.664583 0.1124329,-0.582083 0.6895894,-3.439587 1.2831258,-6.35 C -1.7761553,52.879577 0.38824224,37.675135 0.86163777,31.155721 1.1113005,27.717472 1.122443,27.692444 2.7504114,26.868127 Z m -4.15891929,1.188557 c 0.28971471,-0.0055 0.43848848,0.12771 0.36276855,0.325045 -0.0706319,0.184066 -1.10737458,3.904774 -2.30373536,8.268229 -1.1963608,4.363455 -2.2890797,8.073146 -2.4282755,8.243425 -0.1391949,0.170279 -1.4072623,0.577239 -2.8179159,0.904337 -4.534052,1.051342 -30.59433,7.915734 -31.069938,8.183997 -0.252687,0.142526 -0.52215,0.259416 -0.59893,0.259416 -0.07674,0 -0.108183,-3.769128 -0.06976,-8.375716 l 0.06976,-8.375717 19.182292,-4.711857 c 10.55025,-2.591526 19.40350448,-4.715959 19.67373421,-4.721159 z m 7.74836429,0.264584 c 0.2702307,0.0052 9.1235175,2.129632 19.6737345,4.721159 l 19.182292,4.711857 0.06976,8.375716 c 0.03842,4.606588 -0.02111,8.368813 -0.132292,8.360213 -0.11119,-0.0086 -0.38065,-0.12531 -0.59893,-0.259416 C 45.56284,53.250952 19.521719,46.390743 14.96517,45.334184 13.554515,45.007086 12.28645,44.600125 12.147254,44.429846 12.008059,44.259567 10.915338,40.549877 9.7189783,36.186422 8.5226175,31.822966 7.4858728,28.102258 7.4152429,27.918193 7.339519,27.720858 7.4883018,27.587648 7.7780115,27.593148 Z M -4.9752153,46.133101 c 0.063787,0.06379 -1.0974647,4.725937 -2.5802042,10.360608 l -2.6959595,10.244853 -8.772074,0.0015 -8.772075,0.0021 -0.09819,-3.63802 c -0.0832,-3.077422 -0.18513,-3.801789 -0.660425,-4.699972 -1.314365,-2.483813 -3.224095,-3.569431 -6.700366,-3.809587 l -2.248958,-0.155546 9.260416,-2.439127 c 14.247762,-3.752673 23.1400539,-5.994602 23.2678307,-5.866826 z m 17.7565393,0.266651 c 0.129679,-0.12968 8.953785,2.094218 23.26938,5.864758 l 9.260417,2.439128 -2.248958,0.155546 c -3.476607,0.240179 -5.387544,1.326708 -6.699333,3.809586 -0.46994,0.889463 -0.577342,1.630955 -0.660942,4.56768 l -0.09973,3.505729 h -8.837704 c -4.860665,0 -8.839637,-0.0893 -8.841837,-0.198437 C 17.920417,66.434601 16.73654,61.88378 15.291253,56.431181 13.845966,50.97858 12.716399,46.464682 12.781329,46.399752 Z m -52.269161,9.235612 c 2.891845,0 5.783697,0.09702 6.482291,0.290421 1.404237,0.388744 3.416709,2.4007 3.805453,3.804936 0.401633,1.4508 0.401633,20.7742 0,22.225 -0.388744,1.404236 -2.401216,3.416192 -3.805453,3.804936 -1.617605,0.447811 -11.89983,0.368704 -13.229166,-0.101803 -1.35273,-0.478786 -3.17662,-2.396602 -3.546554,-3.728971 -0.395704,-1.425195 -0.390316,-20.766843 0.0062,-22.199162 0.388744,-1.404236 2.400699,-3.416192 3.804936,-3.804936 0.698595,-0.193396 3.590447,-0.290421 6.482293,-0.290421 z m 86.783333,0.264583 c 2.891845,0 5.783697,0.09703 6.482292,0.290422 1.404238,0.388743 3.416713,2.4007 3.805452,3.804935 0.19055,0.688315 0.293006,4.573515 0.293006,11.1125 0,6.538986 -0.102456,10.424186 -0.293006,11.1125 -0.388739,1.404236 -2.401214,3.416192 -3.805452,3.804936 -1.618614,0.447715 -11.899397,0.368674 -13.22865,-0.101803 -1.352729,-0.478785 -3.177141,-2.396602 -3.547071,-3.728971 -0.396009,-1.425194 -0.390318,-20.766843 0.0062,-22.199162 0.388739,-1.404235 2.400697,-3.416192 3.804935,-3.804935 0.698595,-0.193397 3.590447,-0.290422 6.482292,-0.290422 z m -66.145833,15.340149 c 3.929059,0 7.14375,0.09702 7.14375,0.216008 0,0.181338 -0.653754,2.052212 -2.16731,6.200138 -0.146024,0.400182 -0.402843,0.715639 -0.570508,0.701249 -0.446453,-0.03831 -11.535164,-6.684969 -11.542964,-6.918957 -0.0036,-0.109137 3.207973,-0.198438 7.137032,-0.198438 z m 45.508333,0.264583 c 3.929066,0 7.141066,0.0893 7.138066,0.198438 -0.0031,0.109141 -2.527624,1.686721 -5.610511,3.505729 -3.082877,1.819009 -5.745501,3.343063 -5.916951,3.386873 -0.17145,0.04381 -0.433267,-0.253845 -0.581877,-0.661458 -1.546128,-4.240642 -2.172477,-6.031756 -2.172477,-6.213574 0,-0.118988 3.214694,-0.216008 7.14375,-0.216008 z M 4.2815841,112.0836 c -0.6349258,0.0148 -1.2786715,0.10225 -1.9244304,0.26768 -3.6902003,0.94539 -6.4257321,4.0526 -7.3318522,8.32766 -0.5398795,2.54715 -0.5398795,26.36892 0,28.91606 0.8630261,4.07174 3.2823998,6.97049 6.8450602,8.20157 1.6938043,0.58532 2.8026819,0.60649 4.778003,0.092 3.5626393,-0.92795 6.3002193,-4.08461 7.1923263,-8.29355 0.539329,-2.54454 0.540236,-26.36856 0.001,-28.91244 -1.111382,-5.24335 -5.1156598,-8.70273 -9.5601399,-8.59896 z m 0.036174,1.62212 c 3.4322345,0 6.0814919,1.985 7.5917849,5.68854 0.589528,1.44572 0.593246,1.54844 0.593246,15.74271 0,14.19428 -0.0037,14.29699 -0.593246,15.74271 -0.855818,2.09864 -2.3587955,3.92389 -3.9806359,4.83381 -3.6159423,2.02869 -7.93443498,0.65029 -10.1921427,-3.25303 -1.4838875,-2.56546 -1.5356741,-3.20752 -1.4510742,-18.03559 0.076263,-13.36732 0.086948,-13.59771 0.6712768,-15.03061 0.8664562,-2.12473 2.35636185,-3.92237 4.03644617,-4.86895 1.24614583,-0.7021 1.72370953,-0.81959 3.32434493,-0.81959 z m -43.2764291,47.49839 c 2.891846,0 5.783697,0.097 6.482292,0.29043 1.404236,0.38874 3.416711,2.40069 3.805452,3.80493 0.401401,1.44996 0.401401,20.51047 0,21.96042 -0.388742,1.40424 -2.401216,3.41619 -3.805452,3.80493 -1.617606,0.44781 -11.89983,0.36871 -13.229166,-0.1018 -1.352729,-0.47878 -3.17662,-2.3966 -3.546554,-3.72897 -0.39547,-1.42435 -0.39009,-20.50308 0.0062,-21.93458 0.388745,-1.40424 2.4007,-3.41619 3.804936,-3.80493 0.698594,-0.1934 3.590446,-0.29043 6.482291,-0.29043 z m 85.725,0.26459 c 2.891846,0 5.783698,0.097 6.482292,0.29042 1.404239,0.38874 3.416713,2.4007 3.805452,3.80493 0.19024,0.68718 0.293006,4.53797 0.293006,10.98021 0,6.44225 -0.102766,10.29303 -0.293006,10.98021 -0.388739,1.40424 -2.401213,3.4162 -3.805452,3.80494 -1.618624,0.44772 -11.899397,0.36866 -13.22865,-0.10181 -1.352729,-0.47879 -3.177131,-2.3966 -3.54707,-3.72897 -0.39577,-1.42435 -0.390089,-20.50308 0.0062,-21.93458 0.38874,-1.40423 2.400707,-3.41619 3.804936,-3.80493 0.698599,-0.1934 3.590445,-0.29042 6.482291,-0.29042 z m -42.9792879,31.70866 30.0932529,0.0119 0.68833,0.64079 c 1.330009,1.23858 1.80549,1.34558 6.641455,1.4919 l 4.630209,0.14004 -0.02532,3.70417 c -0.0248,3.62621 -0.372767,5.68891 -1.428336,8.46356 l -0.300757,0.79065 -0.496611,-0.65835 -0.49661,-0.65836 -18.117241,-0.0713 -18.1172395,-0.0718 -0.5167644,0.73329 c -0.2840387,0.40312 -0.7722033,1.23879 -1.085205,1.85725 -0.3130017,0.61846 -0.718809,1.12448 -0.9017538,1.12448 -0.6791363,0 -1.5083366,-0.85124 -2.3290568,-2.39107 l -0.8443929,-1.5844 -18.3105096,0.0103 -18.311027,0.0103 -0.31626,0.69453 c -0.435658,0.95617 -0.670426,0.61582 -1.490865,-2.1637 -0.605063,-2.04984 -0.708284,-2.91517 -0.743624,-6.2177 l -0.04134,-3.83646 4.630208,-0.14005 c 4.737262,-0.14333 5.305383,-0.26291 6.524667,-1.372 0.561101,-0.51007 1.114648,-0.51948 30.6647941,-0.50798 z\"\n         style=\"display:inline;fill:#030303\"\n         id=\"skelett\" /><path\n         d=\"m 4.5632206,26.363765 c -0.094375,-0.01419 -0.021592,0.09373 0.1658814,0.315743 0.2873674,0.340316 0.4320496,1.030074 0.4392496,2.094963 0.021492,3.174879 2.7504435,29.800182 3.6581747,35.691362 0.2265185,1.470104 0.5198341,3.612484 0.6516398,4.760432 0.3519003,3.064827 1.7222849,10.833829 2.6380819,14.95671 1.576282,7.096361 2.729503,11.050086 7.1453,24.495665 3.09574,9.42625 4.396152,14.07662 5.32784,19.05 0.797579,4.25754 0.86665,13.92495 0.127641,17.85937 -1.870676,9.95935 -5.407154,19.13069 -14.8337197,38.47001 -1.978972,4.06001 -3.59823,7.42358 -3.59823,7.47448 l 5.168e-4,5.1e-4 c 0,0.0509 1.8454731,0.0925 4.1010419,0.0925 h 4.100525 v -1.98437 -1.98438 h 5.16e-4 8.983431 5.17e-4 8.983948 l 0.0036,-12.31656 c 10e-4,-3.38696 0.01815,-6.49144 0.04444,-8.76484 0.02629,-2.27309 0.06174,-3.71486 0.100252,-3.77755 6e-6,0 -5e-6,-5e-4 0,-5.1e-4 0.077,-0.12464 1.311968,-1.06919 2.744536,-2.0991 l 2.604492,-1.87224 0.173633,-3.22099 c 0.198795,-3.69716 0.197528,-8.65166 0.05478,-12.49846 -0.114748,-2.19395 -0.298963,-4.29376 -0.559656,-6.29884 -0.05453,-0.37783 -0.107679,-0.76071 -0.166398,-1.13378 -0.07186,-0.49026 -0.148999,-0.97426 -0.22996,-1.45366 -0.411598,-2.33919 -0.950943,-4.67515 -1.653129,-7.17734 -1.236639,-4.11028 -2.485614,-7.75249 -4.219381,-12.21166 -0.478151,-1.2177 -1.004136,-2.52063 -1.557528,-3.87263 -0.326184,-0.79912 -0.695345,-1.68332 -1.05885,-2.55385 -1.87456,-4.49266 -4.06189,-9.567258 -6.841427,-15.865696 C 17.177212,81.848593 13.187621,71.096826 12.372046,66.874471 12.259614,66.292388 11.68194,63.434882 11.088404,60.524471 9.6186836,53.317681 7.4593209,38.220447 6.9635909,31.684888 6.9074087,30.944199 6.8635067,30.466743 6.8173466,29.957861 6.7988471,29.755379 6.7777791,29.43994 6.7589522,29.268498 6.7145644,28.864291 6.6559742,28.634364 6.5997888,28.371395 6.5719581,28.240119 6.5536201,28.033973 6.5202071,27.929561 6.3571181,27.422197 6.0738381,27.198045 5.6592777,26.950293 5.5501075,26.886656 5.4780078,26.824258 5.3425012,26.752372 l -0.026872,-0.01447 C 4.9226937,26.522307 4.6480326,26.376516 4.5632206,26.363765 Z m -1.8288289,0.521932 -0.1307414,0.06511 c -1.0075507,0.514462 -1.3478167,0.804903 -1.5275553,2.01228 -0.015882,0.112215 -0.037373,0.167564 -0.052193,0.298173 -0.0568298,0.486842 -0.10327539,1.082092 -0.16226403,1.894458 -0.35504629,4.889555 -1.6612057,14.664468 -2.92695317,22.359876 -0.4219158,2.565135 -0.8391534,4.899215 -1.2154296,6.744291 -0.5935359,2.91041 -1.1712098,5.767918 -1.2836426,6.35 -0.8155734,4.222355 -4.8051685,14.974118 -9.5229336,25.664583 -1.741226,3.945622 -3.087896,7.048263 -4.378027,10.039182 -0.773622,1.798 -1.461792,3.42931 -2.13217,5.02708 -0.493886,1.17555 -0.961815,2.30404 -1.390096,3.35329 -0.553392,1.352 -1.079376,2.65493 -1.557527,3.87263 -1.733767,4.45916 -2.982743,8.10137 -4.219381,12.21166 -0.702186,2.50218 -1.241531,4.83815 -1.653129,7.17734 -0.08096,0.47939 -0.158104,0.9634 -0.22996,1.45366 -0.05872,0.37306 -0.111871,0.75595 -0.166398,1.13378 -0.260693,2.00507 -0.444908,4.10488 -0.559656,6.29884 -0.142751,3.8468 -0.144018,8.80131 0.05478,12.49846 l 0.173116,3.22099 2.604492,1.87224 h 5.17e-4 c 0.620716,0.44625 0.720626,0.55561 1.189075,0.91002 0.612534,0.46342 1.511815,1.11845 1.55546,1.18907 6e-6,1e-5 -5e-6,5.1e-4 0,5.2e-4 0.07702,0.12539 0.141831,5.76893 0.144178,12.54239 l 0.0046,12.31656 h 8.983948 8.9839482 v 2.07222 5.2e-4 c 2.99e-5,1.12513 0.087606,2.12091 0.1948202,2.25154 0.01675,0.0137 0.1779553,0.0195 0.2289265,0.0315 0.3871778,0.0916 2.6879389,0.11556 5.58312179,0.0444 0.36104457,-0.0221 0.77518557,-0.0385 1.03507894,-0.0698 l 1.35340577,-0.16226 -3.6953817,-7.57421 c -9.5043437,-19.47991 -13.0525077,-28.668 -14.9298387,-38.66276 -0.739006,-3.93442 -0.669944,-13.60183 0.127641,-17.85938 0.931687,-4.97338 2.23262,-9.62373 5.328357,-19.05 4.4157975,-13.445726 5.5690188,-17.3993 7.1453007,-24.495661 0.9157961,-4.122883 2.2861826,-11.891883 2.6380818,-14.95671 0.1318068,-1.147949 0.4246045,-3.290329 0.6511231,-4.760433 0.8346763,-5.417058 3.5205578,-31.359738 3.6871134,-35.61488 z M -40.39941,39.12371 c -0.03952,-0.03922 -0.06718,0.295281 -0.06718,0.895553 0,0.800362 0.04945,1.127786 0.110071,0.727604 0.06062,-0.400181 0.06062,-1.055027 0,-1.455208 -0.01516,-0.100046 -0.02972,-0.154875 -0.04289,-0.167949 z m 88.635417,0.264583 c -0.03952,-0.03922 -0.06718,0.29528 -0.06718,0.895553 0,0.800362 0.04947,1.127785 0.110071,0.727604 0.0606,-0.400182 0.0606,-1.055026 0,-1.455208 -0.01516,-0.100045 -0.02972,-0.154874 -0.04289,-0.167949 z m -88.9,12.691732 c -0.0402,-0.06068 -0.0693,0.225827 -0.0708,0.771529 -0.0013,0.464489 0.0198,0.740833 0.05064,0.813904 0.01116,-0.09221 0.02853,-1.213141 0.04186,-1.496033 -0.0072,-0.02959 -0.01504,-0.07934 -0.0217,-0.0894 z m 89.164583,0.264584 c -0.02243,-0.03385 -0.02662,0.263465 -0.03927,0.430464 0.0098,0.18357 0.02423,1.126483 0.03256,1.192176 0.01408,8.38e-4 0.02937,-0.03374 0.04599,-0.11989 0.0632,-0.32542 0.06493,-0.920733 0.0041,-1.322916 -0.0152,-0.100546 -0.03001,-0.159608 -0.04341,-0.179834 z m -72.973323,14.19965 c -1.928147,0.0452 -0.350565,0.08217 3.505729,0.08217 3.856294,0 5.433876,-0.03696 3.505729,-0.08217 -1.928148,-0.04521 -5.083311,-0.04521 -7.011458,0 z m 46.681905,0 c -2.42815,0.04362 -0.366574,0.07916 4.581116,0.07906 4.9477,-9e-5 6.934262,-0.03553 4.414717,-0.07906 -2.519545,-0.04353 -6.567678,-0.04362 -8.995833,0 z m -13.0121257,48.936551 0.2428792,0.27543 c 0.3527873,0.40018 0.6802145,0.72761 0.7276045,0.72761 0.0068,0 0.0049,-0.005 0.01085,-0.006 C 9.8711152,116.10963 9.5441397,115.7765 9.1970443,115.4805 Z M -36.189331,138.8308 c -0.04785,-0.0178 -0.08165,0.13436 -0.08165,0.40721 0,0.36383 0.05992,0.51263 0.133325,0.33073 0.0091,-0.0224 0.0066,-0.0561 0.01344,-0.0816 0.0063,-0.1234 0.01156,-0.2765 0.01809,-0.39222 -0.009,-0.0649 -0.0107,-0.13599 -0.03152,-0.18759 -0.01835,-0.0455 -0.03572,-0.0705 -0.05168,-0.0765 z m 80.16875,0.26459 c -0.03679,-0.0137 -0.05133,0.14826 -0.06253,0.31315 0.0077,0.13823 0.01332,0.31573 0.02067,0.46458 0.02412,0.0587 0.05707,0.0506 0.09353,-0.0398 0.0734,-0.1819 0.0734,-0.47956 0,-0.66146 -0.01834,-0.0455 -0.03573,-0.0705 -0.05168,-0.0765 z m -80.414729,5.49527 c -0.04112,-0.0321 -0.06976,0.24163 -0.06976,0.73277 0,0.65481 0.05166,0.92273 0.114722,0.59531 0.06307,-0.32742 0.06307,-0.8632 0,-1.19062 -0.01577,-0.0819 -0.03125,-0.12676 -0.04496,-0.13746 z m 80.697916,0.26458 c -0.04112,-0.0321 -0.06976,0.24164 -0.06976,0.73277 0,0.65481 0.05162,0.92274 0.114722,0.59532 0.0631,-0.32742 0.0631,-0.86321 0,-1.19063 -0.01576,-0.0819 -0.03125,-0.12676 -0.04496,-0.13746 z m -80.71652,1.91306 c -0.04786,-0.0178 -0.08165,0.13436 -0.08165,0.40721 0,0.36383 0.05993,0.51263 0.133325,0.33073 0.0734,-0.1819 0.0734,-0.47956 0,-0.66146 -0.01835,-0.0455 -0.03572,-0.0705 -0.05168,-0.0765 z m 80.697917,0.26459 c -0.04785,-0.0178 -0.08165,0.13436 -0.08165,0.40721 0,0.36383 0.05992,0.51262 0.133325,0.33073 0.0734,-0.1819 0.0734,-0.47955 0,-0.66146 -0.01834,-0.0455 -0.03573,-0.0705 -0.05168,-0.0765 z m -80.747526,1.03662 c -0.02782,0.0278 -0.04636,0.12029 -0.05271,0.27441 -0.01149,0.27886 0.05109,0.43516 0.139009,0.34726 0.08792,-0.0879 0.0971,-0.31594 0.02067,-0.50694 -0.04223,-0.10553 -0.07915,-0.14254 -0.106969,-0.11473 z m 80.697916,0.26459 c -0.02421,0.0242 -0.03775,0.11862 -0.04599,0.23874 2.12e-4,0.0366 -1.97e-4,0.0627 0,0.0992 0.0028,0.22674 0.05337,0.36262 0.132292,0.28371 0.0879,-0.0879 0.09707,-0.31596 0.02067,-0.50695 -0.04223,-0.10553 -0.07915,-0.14254 -0.106971,-0.11472 z m -80.697916,1.05833 c -0.02782,0.0278 -0.04636,0.12029 -0.05271,0.2744 -0.01149,0.27887 0.05109,0.43517 0.139009,0.34727 0.08792,-0.0879 0.0971,-0.31595 0.02067,-0.50695 -0.04223,-0.10553 -0.07915,-0.14254 -0.106969,-0.11472 z m 80.697916,0.26458 c -0.02609,0.0261 -0.04225,0.11998 -0.04961,0.25735 6e-6,0.0165 -3e-6,0.0306 0,0.047 -0.0042,0.25392 0.05224,0.40096 0.135909,0.31729 0.0879,-0.0879 0.09707,-0.31594 0.02067,-0.50694 -0.04223,-0.10553 -0.07915,-0.14254 -0.106971,-0.11473 z m -80.677246,0.93173 c -0.02388,0.059 -0.04019,0.20495 -0.04289,0.42323 -0.0054,0.43656 0.04948,0.64732 0.121956,0.46819 0.07247,-0.17914 0.0769,-0.53632 0.0098,-0.79375 -0.03354,-0.12872 -0.065,-0.1567 -0.08888,-0.0977 z m 80.6974,0.26458 c -0.02394,0.059 -0.03988,0.20495 -0.04237,0.42323 -0.0054,0.43656 0.04946,0.64732 0.121957,0.46819 0.0727,-0.17913 0.07692,-0.53632 0.0098,-0.79375 -0.03354,-0.12871 -0.06547,-0.1567 -0.0894,-0.0977 z m -45.3217813,3.16829 c 0.31369975,0.3487 0.64084602,0.67358 0.99167073,0.95498 -0.0760889,-0.1217 -0.28126953,-0.32866 -0.67696126,-0.67748 z m -25.4377237,24.14271 c -0.09192,-0.004 -0.196991,0.013 -0.292489,0.0512 -0.211065,0.0844 -0.148027,0.14698 0.160197,0.15968 0.278915,0.0115 0.435186,-0.0506 0.347266,-0.13849 -0.04396,-0.0439 -0.123059,-0.0686 -0.214974,-0.0724 z m 61.11875,0.26458 c -0.09192,-0.004 -0.196989,0.013 -0.292489,0.0512 -0.211069,0.0845 -0.148022,0.14698 0.160197,0.15968 0.27897,0.0115 0.435166,-0.0506 0.347266,-0.13849 -0.04396,-0.0439 -0.123059,-0.0686 -0.214974,-0.0724 z m -60.421118,1.45314 c -0.03953,-0.0392 -0.06718,0.29529 -0.06718,0.89556 0,0.8004 0.04945,1.12778 0.110071,0.7276 0.06062,-0.40019 0.06062,-1.05503 0,-1.45521 -0.01516,-0.10004 -0.02972,-0.15487 -0.04289,-0.16795 z m 59.53125,0.26459 c -0.03952,-0.0392 -0.06718,0.29527 -0.06718,0.89555 0,0.8004 0.04947,1.12778 0.110071,0.7276 0.0606,-0.40018 0.0606,-1.05503 0,-1.4552 -0.01516,-0.10005 -0.02972,-0.15488 -0.04289,-0.16795 z m -54.849365,8.37055 c -2.43747,0.0437 -0.443168,0.0791 4.43177,0.0791 4.840394,0 6.8186206,-0.0348 4.46071,-0.078 l -0.05994,-0.001 c -2.439719,-0.0433 -6.403593,-0.0435 -8.832535,0 z m 41.306005,0.26458 -0.05994,0.001 c -2.357906,0.0433 -0.379688,0.078 4.460709,0.078 4.874931,0 6.869236,-0.0354 4.431771,-0.0791 -2.428948,-0.0435 -6.392811,-0.0432 -8.832536,0 z m -27.9962236,0.61702 c -0.040198,-0.0607 -0.069297,0.22583 -0.070797,0.77152 -0.00164,0.59946 0.032576,0.90417 0.079582,0.81908 0.029656,-0.2065 0.027554,-0.45783 0.032556,-0.73019 0.0016,-0.24609 0.033356,-0.47368 0.00207,-0.68058 -0.015204,-0.10055 -0.030009,-0.15961 -0.043408,-0.17983 z m 23.5479166,0.26458 c -0.0402,-0.0607 -0.0693,0.22583 -0.0708,0.77153 -0.002,0.72725 0.04779,1.05664 0.110588,0.73122 0.06279,-0.32542 0.06444,-0.92074 0.0036,-1.32292 -0.0152,-0.10054 -0.03001,-0.1596 -0.04341,-0.17983 z m -13.1113443,1.99626 c -0.1198893,0 -0.2397789,0.0181 -0.3307292,0.0548 -0.031287,0.0126 -0.039886,0.024 -0.052193,0.0356 0.2667148,-0.005 0.4780521,-0.007 0.7493083,-0.0114 -0.012425,-0.008 -0.014302,-0.0157 -0.035657,-0.0243 -0.09095,-0.0367 -0.2108399,-0.0548 -0.3307291,-0.0548 z m -20.8514407,0.0326 v 5.1e-4 c -1.846797,0.0454 -0.262302,0.0823 3.521232,0.0822 3.783535,-2e-4 5.2946719,-0.0374 3.357935,-0.0827 -1.936737,-0.0452 -5.032369,-0.0454 -6.879167,0 z m -7.657413,0.008 c -0.345936,0.0524 -0.07004,0.0903 0.506945,0.10129 l 0.379822,0.003 c 0.636472,-0.008 0.929495,-0.0492 0.568441,-0.10387 -0.400181,-0.0606 -1.055027,-0.0606 -1.455208,0 z m 51.84283,0.25632 c -1.936736,-0.0452 -5.032364,-0.0449 -6.879167,5.2e-4 -1.846797,0.0454 -0.262301,0.0823 3.521232,0.0822 3.783533,-2e-4 5.294671,-0.0374 3.357935,-0.0827 z m 6.365503,0.008 c -0.361052,0.0547 -0.06803,0.0955 0.568441,0.10387 l 0.379821,-0.003 c 0.577007,-0.011 0.852879,-0.0489 0.506946,-0.10128 -0.400189,-0.0606 -1.055029,-0.0606 -1.455208,0 z m -71.632837,2.79466 c -0.04339,-0.025 -0.0739,0.18799 -0.0739,0.56999 0,0.50932 0.05437,0.71768 0.120922,0.46302 0.06655,-0.25466 0.06655,-0.67138 0,-0.92604 -0.01664,-0.0637 -0.03256,-0.0986 -0.04703,-0.10697 z m 86.51875,0.26458 c -0.04338,-0.025 -0.0739,0.188 -0.0739,0.56999 0,0.50932 0.05432,0.71768 0.120922,0.46302 0.0665,-0.25466 0.0665,-0.67138 0,-0.92604 -0.01662,-0.0637 -0.03256,-0.0986 -0.04702,-0.10697 z m -86.559574,1.60197 c -0.02388,0.059 -0.04019,0.20495 -0.04289,0.42323 -0.0054,0.43655 0.04949,0.64733 0.121956,0.46819 0.07247,-0.17913 0.0769,-0.53632 0.0098,-0.79375 -0.03354,-0.12872 -0.065,-0.1567 -0.08888,-0.0977 z m 86.51875,0.26458 c -0.02393,0.059 -0.04039,0.20495 -0.04289,0.42323 -0.0054,0.43656 0.04946,0.64732 0.121956,0.46819 0.0727,-0.17913 0.07692,-0.53632 0.0098,-0.79375 -0.03354,-0.12871 -0.06495,-0.1567 -0.08888,-0.0977 z\"\n         style=\"display:inline;fill:#009273\"\n         id=\"gruen\" /></g></g></svg>\n",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_FORMULA_1}"
+          },
+          "query": "from(bucket: \"TelemetryData\")\r\n  |> range(start: -500ms, stop: 0m)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"Formula1_measurements\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"wear_fl\" or r[\"_field\"] == \"wear_fr\" or r[\"_field\"] == \"wear_rl\" or r[\"_field\"] == \"wear_rr\" or r[\"_field\"] == \"wingDamage_fl\" or r[\"_field\"] == \"wingDamage_fr\")\r\n  |> filter(fn: (r) => r[\"metric\"] == \"car\")\r\n  |> last()\r\n  |> aggregateWindow(every: 500ms, fn: last, createEmpty: false)\r\n",
+          "refId": "A"
+        }
+      ],
+      "title": "Panel Title",
+      "type": "marcuscalidus-svg-panel",
+      "useSVGBuilder": false
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_FORMULA_1}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "displayName": "kmh",
+          "mappings": [],
+          "noValue": "0 kmh",
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 70
+              },
+              {
+                "color": "red",
+                "value": 90
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 5,
+        "x": 6,
+        "y": 0
+      },
+      "id": 4,
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "pluginVersion": "10.1.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_FORMULA_1}"
+          },
+          "query": "from(bucket: \"TelemetryData\")\r\n  |> range(start: -1m, stop: 0m)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"Formula1_measurements\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"speed\")\r\n  |> filter(fn: (r) => r[\"metric\"] == \"car\")\r\n  |> last()\r\n  |> aggregateWindow(every: 500ms, fn: last, createEmpty: false)\r\n  ",
+          "refId": "A"
+        }
+      ],
+      "title": "Speed",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_FORMULA_1}"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 0,
+          "displayName": "Fuel Level",
+          "mappings": [],
+          "max": 100,
+          "min": 0,
+          "noValue": "Expecting Fuel Level",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 21,
+        "w": 3,
+        "x": 11,
+        "y": 0
+      },
+      "id": 5,
+      "options": {
+        "displayMode": "gradient",
+        "minVizHeight": 10,
+        "minVizWidth": 0,
+        "orientation": "vertical",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "valueMode": "text"
+      },
+      "pluginVersion": "10.1.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_FORMULA_1}"
+          },
+          "query": "from(bucket: \"TelemetryData\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"Formula1_measurements\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"fuel_lvl\")\r\n  |> filter(fn: (r) => r[\"metric\"] == \"car\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: last, createEmpty: false)\r\n  |> yield(name: \"last\")",
+          "refId": "A"
+        }
+      ],
+      "title": "Fuel in Tank",
+      "transparent": true,
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_FORMULA_1}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "mappings": [],
+          "noValue": "Waiting for Time in second",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 8,
+        "x": 14,
+        "y": 0
+      },
+      "id": 7,
+      "options": {
+        "inlineEditing": true,
+        "root": {
+          "background": {
+            "color": {
+              "fixed": "transparent"
+            }
+          },
+          "border": {
+            "color": {
+              "fixed": "dark-green"
+            },
+            "width": 0
+          },
+          "constraint": {
+            "horizontal": "left",
+            "vertical": "top"
+          },
+          "elements": [
+            {
+              "background": {
+                "color": {
+                  "fixed": "transparent"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "rgb(204, 204, 220)"
+                },
+                "size": 16,
+                "text": {
+                  "fixed": "Last Lap Time :"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "name": "Element 2",
+              "placement": {
+                "height": 117,
+                "left": 29,
+                "top": 36,
+                "width": 225
+              },
+              "type": "text"
+            },
+            {
+              "background": {
+                "color": {
+                  "field": "lastLapTime car",
+                  "fixed": "#D9D9D9"
+                }
+              },
+              "border": {
+                "color": {
+                  "fixed": "dark-green"
+                }
+              },
+              "config": {
+                "align": "center",
+                "color": {
+                  "fixed": "#000000"
+                },
+                "size": 20,
+                "text": {
+                  "field": "lastLapTime car",
+                  "fixed": "",
+                  "mode": "field"
+                },
+                "valign": "middle"
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "name": "Element 3",
+              "placement": {
+                "height": 50,
+                "left": 278,
+                "top": 73,
+                "width": 260
+              },
+              "type": "metric-value"
+            }
+          ],
+          "name": "Element 1699537039837",
+          "placement": {
+            "height": 100,
+            "left": 0,
+            "top": 0,
+            "width": 100
+          },
+          "type": "frame"
+        },
+        "showAdvancedTypes": true
+      },
+      "pluginVersion": "10.1.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_FORMULA_1}"
+          },
+          "query": "from(bucket: \"TelemetryData\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"Formula1_measurements\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"lastLapTime\")\r\n  |> filter(fn: (r) => r[\"metric\"] == \"car\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: last, createEmpty: false)\r\n  |> yield(name: \"last\")",
+          "refId": "A"
+        }
+      ],
+      "title": "Last Lap Time",
+      "type": "canvas"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_FORMULA_1}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "noValue": "RPM",
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 60
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 5,
+        "x": 6,
+        "y": 10
+      },
+      "id": 6,
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "pluginVersion": "10.1.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_FORMULA_1}"
+          },
+          "query": "from(bucket: \"TelemetryData\")\r\n  |> range(start: -1m, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"Formula1_measurements\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"rpm\")\r\n  |> filter(fn: (r) => r[\"metric\"] == \"car\")\r\n  |> aggregateWindow(every: 500ms, fn: last, createEmpty: false)\r\n",
+          "refId": "A"
+        }
+      ],
+      "title": "Motor RPM",
+      "type": "gauge"
+    }
+  ],
+  "refresh": "300ms",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-5m",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "2s",
+      "1s",
+      "100ms",
+      "200ms",
+      "300ms"
+    ]
+  },
+  "timezone": "",
+  "title": "Formel 1",
+  "uid": "de525bea-e37c-4732-be6b-63d3584435fe",
+  "version": 68,
+  "weekStart": ""
+}

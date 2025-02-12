@@ -26,6 +26,7 @@ You will also need a :
     Python-Dependecies:
     
     ```
+    >  python3-cffi) $sudo apt install python3-cffi
     >  Telemetry-F1-2021: 0.3.0) $pip install Telemetry-F1-2021
     >  kuksa-client) $pip install kuksa-client
     >  Paho-MQtt) $pip install paho-mqtt
@@ -134,6 +135,7 @@ If you have setup your system for the first time then you can follow the next st
     * Now you can adjust the dashboard-refresh rate of grafana itself. For me the sweetspot was at 200ms
 ## Useful Troubleshooting Tips:
 * If anything seems to be strugling to start. Whether in the starting process or in the running/developed process, check if all docker container are running properly. If not, restart them.
+* If an error occurs when add influx db as datasource, it may be helpful to switch to url http://influxdb:[INFLUXDB_PORT]
 
 ## Known Limitations
 * After examination there might be a problem in the way the tank percentage value is calculated. Open for a pull-request

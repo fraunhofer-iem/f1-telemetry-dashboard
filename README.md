@@ -33,12 +33,9 @@ You will also need a :
         localhost:3000
         ```
     
-    * Grafana: Login with the credentials ```[admin : adminpassword]```. Then go to dashboards and find the F1 dashboard.
+    * Grafana: Login with the credentials ```[admin : adminpassword]```. Then go to dashboards and find the F1 dashboard. 
 
 4. Boot up the game and start playing to capture Data and watch the grafana UI change and accumulate with data
-
-## Known Limitations
-* After examination there might be a problem in the way the tank percentage value is calculated. Open for a pull-request
 
 ## Known Issues
 * Please be sure to check if your firewall is allowing incoming UDP packets from 20777

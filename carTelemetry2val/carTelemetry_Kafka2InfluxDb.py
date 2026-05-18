@@ -6,11 +6,16 @@ sys.path.append(os.path.join(scriptDir, "../../"))
 from kafka import KafkaConsumer
 from json import loads
 import influxdb_client 
-from influxdb_client.client.write_api import SYNCHRONOUS
-
+from influxdb_client.client.write_api import WriteOptions
 TOPIC_NAME = 'tester1234'
 
-consumer = KafkaConsumer(TOPIC_NAME, value_deserializer=lambda m: loads(m.decode('ascii')))
+consumer = KafkaConsumer(
+    TOPIC_NAME, 
+    bootstrap_servers=['kafka:9092'], 
+    group_id='influx_feeder_group',          # Zwingend für sauberes Offset-Tracking
+    auto_offset_reset='latest',              # Verhindert Abarbeitung alter Backlogs nach Crash
+    value_deserializer=lambda m: loads(m.decode('utf-8'))  # UTF-8 Matching zum Producer
+)
 print("Initializing ...")
 
 
@@ -53,7 +58,7 @@ token=influxConfig.get('token')
 url="http://" + listenerConfig.get('host')+':8086'
 
 client = influxdb_client.InfluxDBClient(url=url,token=token,org=org)
-write_api = client.write_api(write_options=SYNCHRONOUS)
+write_api = client.write_api(write_options=WriteOptions(batch_size=100, flush_interval=50))
 
 class DataSaveObject:
     def __init__(self, name):
@@ -72,35 +77,45 @@ def initSaves(keyList):
 
 def getAndSaveKafkaVal():
     for msg in consumer:
-        msgData = msg.value
-        speedPoint=influxdb_client.Point('Formula1_measurements').tag("metric","car").field("speed",int(float(msgData['Vehicle.Speed'])))
-        frontLeftWingDamagePoint=influxdb_client.Point('Formula1_measurements').tag("metric","car").field("wingDamage_fl",int(float(msgData['Vehicle.FrontLeftWingDamage'])))
-        frontRightWingDamagePoint=influxdb_client.Point('Formula1_measurements').tag("metric","car").field("wingDamage_fr",int(float(msgData['Vehicle.FrontRightWingDamage'])))
-        frontLeftTireWearPoint=influxdb_client.Point('Formula1_measurements').tag("metric","car").field("wear_fl",int(float(msgData['Vehicle.Tire.FrontLeftWear'])))
-        frontRightTireWearPoint=influxdb_client.Point('Formula1_measurements').tag("metric","car").field("wear_fr",int(float(msgData['Vehicle.Tire.FrontRightWear'])))
-        rearLeftTireWearPoint=influxdb_client.Point('Formula1_measurements').tag("metric","car").field("wear_rl",int(float(msgData['Vehicle.Tire.RearLeftWear'])))
-        rearRightTireWearPoint=influxdb_client.Point('Formula1_measurements').tag("metric","car").field("wear_rr",int(float(msgData['Vehicle.Tire.RearRightWear'])))
-        lastLapTimePoint=influxdb_client.Point('Formula1_measurements').tag("metric","car").field("lastLapTime",int(msgData['Vehicle.LastLapTime']))
-        fuelLevelPoint=influxdb_client.Point('Formula1_measurements').tag("metric","car").field("fuel_lvl",int(float(msgData['Vehicle.FuelLevel'])))
-        vehicleRPMPoint=influxdb_client.Point('Formula1_measurements').tag("metric","car").field("rpm",int(msgData['Vehicle.RPM']))
-        
-        datapoints=[speedPoint,
-                    frontLeftWingDamagePoint,
-                    frontRightWingDamagePoint,
-                    frontLeftTireWearPoint,
-                    frontRightTireWearPoint,
-                    rearLeftTireWearPoint,
-                    rearRightTireWearPoint, 
-                    lastLapTimePoint,
-                    fuelLevelPoint,
-                    vehicleRPMPoint,
-                    ]
-        write_api.write(bucket=bucket,org=org,record=datapoints) 
+        print("msg received")
+        try:
+            msgData = msg.value
+            
+            # Alle Casts auf float setzen, um ValueError bei Dezimalzahlen zu verhindern
+            speedPoint=influxdb_client.Point('Formula1_measurements').tag("metric","car").field("speed",float(msgData['Vehicle.Speed']))
+            frontLeftWingDamagePoint=influxdb_client.Point('Formula1_measurements').tag("metric","car").field("wingDamage_fl",float(msgData['Vehicle.FrontLeftWingDamage']))
+            frontRightWingDamagePoint=influxdb_client.Point('Formula1_measurements').tag("metric","car").field("wingDamage_fr",float(msgData['Vehicle.FrontRightWingDamage']))
+            frontLeftTireWearPoint=influxdb_client.Point('Formula1_measurements').tag("metric","car").field("wear_fl",float(msgData['Vehicle.Tire.FrontLeftWear']))
+            frontRightTireWearPoint=influxdb_client.Point('Formula1_measurements').tag("metric","car").field("wear_fr",float(msgData['Vehicle.Tire.FrontRightWear']))
+            rearLeftTireWearPoint=influxdb_client.Point('Formula1_measurements').tag("metric","car").field("wear_rl",float(msgData['Vehicle.Tire.RearLeftWear']))
+            rearRightTireWearPoint=influxdb_client.Point('Formula1_measurements').tag("metric","car").field("wear_rr",float(msgData['Vehicle.Tire.RearRightWear']))
+            lastLapTimePoint=influxdb_client.Point('Formula1_measurements').tag("metric","car").field("lastLapTime",float(msgData['Vehicle.LastLapTime']))
+            fuelLevelPoint=influxdb_client.Point('Formula1_measurements').tag("metric","car").field("fuel_lvl",float(msgData['Vehicle.FuelLevel']))
+            vehicleRPMPoint=influxdb_client.Point('Formula1_measurements').tag("metric","car").field("rpm",float(msgData['Vehicle.RPM']))
+            
+            datapoints=[speedPoint,
+                        frontLeftWingDamagePoint,
+                        frontRightWingDamagePoint,
+                        frontLeftTireWearPoint,
+                        frontRightTireWearPoint,
+                        rearLeftTireWearPoint,
+                        rearRightTireWearPoint, 
+                        lastLapTimePoint,
+                        fuelLevelPoint,
+                        vehicleRPMPoint,
+                        ]
+            write_api.write(bucket=bucket,org=org,record=datapoints) 
+            print(f"Written to Influx: Speed={msgData['Vehicle.Speed']}")
+            
+        except Exception as e:
+            print(f"Fehler beim Schreiben in InfluxDB: {e}", file=sys.stderr)
+            continue
         
                
 
 if __name__ == '__main__':
     arr=initSaves(msgKeys)
+    print(arr)
     getAndSaveKafkaVal()
 
                

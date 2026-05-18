@@ -1,0 +1,4 @@
+kafka-python
+influxdb-client
+kuksa-client
+Telemetry-F1-2021

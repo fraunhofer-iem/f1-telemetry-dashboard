@@ -1,0 +1,150 @@
+version: '3.8'
+
+networks:
+  f1-net:
+    driver: bridge
+
+volumes:
+  grafana_data:
+  influxdb_data:
+  zookeeper_data:
+  kafka_data:
+
+services:
+  # --- INFRASTRUKTUR ---
+  zookeeper:
+    image: wurstmeister/zookeeper:latest
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    volumes:
+      - zookeeper_data:/opt/zookeeper-3.4.13/data
+    networks:
+      - f1-net
+
+  kafka:
+    image: wurstmeister/kafka:latest
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    restart: always
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - kafka_data:/kafka
+    networks:
+      - f1-net
+
+  influxdb:
+    image: influxdb:2.7.10
+    container_name: influxdb
+    ports:
+      - "8086:8086"
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=admin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=adminpassword
+      - DOCKER_INFLUXDB_INIT_ORG=f1_org
+      - DOCKER_INFLUXDB_INIT_BUCKET=TelemetryData
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=f1-telemetry-secret-token
+    volumes:
+      - influxdb_data:/var/lib/influxdb2
+    networks:
+      - f1-net
+
+  grafana:
+    image: grafana/grafana:10.1.1
+    container_name: grafana-server
+    restart: always
+    depends_on:
+      - influxdb
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=adminpassword
+      - GF_INSTALL_PLUGINS=marcuscalidus-svg-panel
+      - GF_DASHBOARDS_MIN_REFRESH_INTERVAL=1ms
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./imports:/var/lib/grafana/dashboards:ro
+      - ./provisioning/dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml:ro
+      - ./provisioning/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml:ro
+    networks:
+      - f1-net
+
+  telegraf:
+    image: telegraf:1.32.1
+    container_name: telegraf
+    restart: always
+    depends_on:
+      - influxdb
+    volumes:
+      - ./configs/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+    ports:
+      - "8125:8125/udp" 
+    networks:
+      - f1-net
+
+  kuksa-databroker:
+    image: ghcr.io/eclipse/kuksa.val/databroker:master
+    container_name: kuksa-databroker
+    ports:
+      - "55555:55555"
+    environment:
+      - KUKSA_DATA_BROKER_PORT=55555
+      - LOG_LEVEL=ALL
+    volumes:
+      - ./kuksa-incubation/fone2val/VSS/vss.json:/vss.json:ro
+    command: ["--insecure", "--vss", "/vss.json"]
+    networks:
+      - f1-net
+
+  # --- CUSTOM FEEDER SERVICES ---
+  feeder-udp2kuksa:
+    build: .
+    container_name: feeder_udp2kuksa
+    command: ["python", "-u", "carTelemetry_feeder.py"]
+    depends_on:
+      - kuksa-databroker
+    ports:
+      - "20777:20777/udp" 
+    restart: always
+    volumes:
+      - ./configs/carTelemetry_feeder.ini:/config/carTelemetry_feeder.ini:ro
+    networks:
+      - f1-net
+  feeder-kuksa2kafka:
+    build: .
+    container_name: feeder_kuksa2kafka
+    command: ["python", "-u", "carTelemetry_Kuksa2Kafka.py"]
+    depends_on:
+      - kafka
+      - kuksa-databroker
+      - feeder-udp2kuksa
+    restart: always
+    volumes:
+      - ./carTelemetry2val/config/carTelemetry_feeder.ini:/config/carTelemetry_feeder.ini:ro
+    networks:
+      - f1-net
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    ports:
+      - "8080:8080"
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=local
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
+      # Optional: Falls JSON formatiert angezeigt werden soll
+      - KAFKA_CLUSTERS_0_PROPERTIES_VALUE_DESERIALIZER=org.apache.kafka.common.serialization.StringDeserializer
+    depends_on:
+      - kafka
+    networks:
+      - f1-net

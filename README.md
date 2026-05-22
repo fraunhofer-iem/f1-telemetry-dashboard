@@ -45,7 +45,7 @@ You can find replay recording at /recorder/example-recordings/telemetry_dump.pkl
 To start a replay recording in autoloop mode, you need to run the following command:
 
 ```
-docker compose --profile replay restart replayer
+docker-compose --profile replay up -d
 ```
 
 

@@ -11,10 +11,11 @@ You will also need a :
 
 
 ## First Time Setup 
+### Please be sure to have a onetime internet connection at this point to download all dependencies.
 1. Init submodule & run docker-compose
     ```
     git submodule update --init --recursive
-    docker-compose up -d #please be sure to have a internetconnection at this point
+    docker-compose up -d 
     ```
 
 2. Go into your game settings in the PS5.
@@ -36,6 +37,17 @@ You will also need a :
     * Grafana: Login with the credentials ```[admin : adminpassword]```. Then go to dashboards and find the F1 dashboard. 
 
 4. Boot up the game and start playing to capture Data and watch the grafana UI change and accumulate with data
+
+## Replay mode
+
+You can find replay recording at /recorder/example-recordings/telemetry_dump.pkl. 
+
+To start a replay recording in autoloop mode, you need to run the following command:
+
+```
+docker compose --profile replay restart replayer
+```
+
 
 ## Known Issues
 * Please be sure to check if your firewall is allowing incoming UDP packets from 20777

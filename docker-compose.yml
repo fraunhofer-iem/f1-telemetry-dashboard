@@ -59,7 +59,9 @@ services:
       - f1-net
 
   grafana:
-    image: grafana/grafana:10.1.1
+    build: 
+      context: .
+      dockerfile: Dockerfile.grafana
     container_name: grafana-server
     restart: always
     depends_on:
@@ -67,7 +69,6 @@ services:
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=adminpassword
-      - GF_INSTALL_PLUGINS=marcuscalidus-svg-panel
       - GF_DASHBOARDS_MIN_REFRESH_INTERVAL=1ms
     ports:
       - "3000:3000"
@@ -146,5 +147,24 @@ services:
       - KAFKA_CLUSTERS_0_PROPERTIES_VALUE_DESERIALIZER=org.apache.kafka.common.serialization.StringDeserializer
     depends_on:
       - kafka
+    networks:
+      - f1-net
+
+  replayer:
+    image: python:3.9-slim
+    container_name: replayer
+    profiles:
+      - replay
+    depends_on:
+      - feeder-udp2kuksa
+      - grafana
+      - influxdb
+    environment:
+      - TARGET_IP=feeder-udp2kuksa
+      - TARGET_PORT=20777
+      - INPUT_FILE=/recorder/example-recordings/telemetry_dump.pkl
+    volumes:
+      - ./recorder:/recorder:ro
+    command: ["python", "-u", "/recorder/replayer.py"]
     networks:
       - f1-net
